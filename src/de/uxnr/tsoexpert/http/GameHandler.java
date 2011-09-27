@@ -1,4 +1,4 @@
-package de.uxnr.dsoexpert.http;
+package de.uxnr.tsoexpert.http;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

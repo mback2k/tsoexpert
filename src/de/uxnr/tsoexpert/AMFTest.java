@@ -1,4 +1,4 @@
-package de.uxnr.dsoexpert;
+package de.uxnr.tsoexpert;
 
 import java.io.FileInputStream;
 import java.io.IOException;
