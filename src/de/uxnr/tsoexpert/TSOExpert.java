@@ -3,8 +3,8 @@ package de.uxnr.tsoexpert;
 import java.io.IOException;
 
 import de.uxnr.proxy.Proxy;
-import de.uxnr.tsoexpert.http.GameHandler;
-import de.uxnr.tsoexpert.http.StaticHandler;
+import de.uxnr.tsoexpert.proxy.GameHandler;
+import de.uxnr.tsoexpert.proxy.StaticHandler;
 
 public class TSOExpert {
 	public static void main(String[] args) throws IOException, InterruptedException {
