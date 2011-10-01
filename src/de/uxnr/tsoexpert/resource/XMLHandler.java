@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
 
 public class XMLHandler implements ResourceHandler {
 	private Document document = null;
-	
+
 	@Override
 	public void handleResource(File file) throws IOException {
 		try {
@@ -23,21 +23,21 @@ public class XMLHandler implements ResourceHandler {
 		} catch (Exception e) {
 			throw new IOException(e);
 		}
-		
+
 		System.out.println(file.getName());
-		
+
 		NodeList nodes = this.document.getElementsByTagName("Building");
-		
+
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
 			NamedNodeMap attrs = node.getAttributes();
 			System.out.println(attrs.getNamedItem("name"));
 		}
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		File file = new File("res/GFX/gfx_settings.xml");
-		
+
 		XMLHandler xh = new XMLHandler();
 		xh.handleResource(file);
 	}
