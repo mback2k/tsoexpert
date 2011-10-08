@@ -1,12 +1,31 @@
 package de.uxnr.tsoexpert.game;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Buff {
+
+	private static Map<Integer, Buff> BuffMap = new HashMap<Integer, Buff>();
+
 	private int level;
 	private boolean tradeable;
 	private Bufftype type;
 	private int productionTime;
 	private int hitPointsAmount;
 	private int recruitingTimePercent;
+	private final int id;
+
+	private Buff(int id) {
+		this.id = id;
+	}
+
+	public static Buff getById(int id) {
+		Buff b = BuffMap.get(id);
+		if (b == null) {
+			b = new Buff(id);
+		}
+		return b;
+	}
 
 	public int getLevel() {
 		return this.level;

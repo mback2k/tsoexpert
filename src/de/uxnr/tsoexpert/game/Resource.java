@@ -1,10 +1,14 @@
 package de.uxnr.tsoexpert.game;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import org.w3c.dom.Node;
 
 public class Resource implements Parsable {
+
+	private static Map<String, Resource> ResourceMap = new HashMap<String, Resource>();
 
 	private String name;
 	private int maxLimit;
@@ -12,8 +16,17 @@ public class Resource implements Parsable {
 	private Vector<Creation> creator;
 	private Vector<LimitExpansion> limitExpansions;
 
-	public Resource(String name2) {
+	private Resource(String name2) {
 		this.name = name2;
+		ResourceMap.put(this.name, this);
+	}
+
+	public static Resource getByName(String name) {
+		Resource r = ResourceMap.get(name);
+		if (r == null) {
+			r = new Resource(name);
+		}
+		return r;
 	}
 
 	public String getName() {

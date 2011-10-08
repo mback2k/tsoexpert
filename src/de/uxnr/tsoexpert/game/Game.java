@@ -14,9 +14,6 @@ import org.w3c.dom.NodeList;
 
 public class Game {
 
-	private final Map<String, Resource> ResourceMap = new HashMap<String, Resource>();
-	private final Map<String, Building> BuildingMap = new HashMap<String, Building>();
-	private final Map<Integer, Creation> CrationMap = new HashMap<Integer, Creation>();
 	private final Map<Integer, Buff> BuffMap = new HashMap<Integer, Buff>();
 
 	public static void main(String args[]) throws Exception {
@@ -51,10 +48,7 @@ public class Game {
 							System.out.println(name);
 						}
 					}
-					Resource r = new Resource(name);
-					if (!game.ResourceMap.containsKey(r)) {
-						resourceMap.put(r.getName(), r);
-					}
+					Resource r = Resource.getByName(name);
 					r.parse(node);
 				}
 			}

@@ -1,9 +1,13 @@
 package de.uxnr.tsoexpert.game;
 
 import java.awt.Point;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Building {
+
+	private static Map<String, Building> BuildingMap = new HashMap<String, Building>();
+
 	private String name;
 	private String uiTyp;
 	private int playerLevel;
@@ -14,6 +18,19 @@ public class Building {
 	private Map<Resource, Integer> costs;
 	private Map<Integer, Buff> upgrades;
 	private Map<Point, BlockingTyp> blocks;
+
+	private Building(String name) {
+		this.name = name;
+		BuildingMap.put(name, this);
+	}
+
+	public static Building getByName(String name) {
+		Building b = BuildingMap.get(name);
+		if (b == null) {
+			b = new Building(name);
+		}
+		return b;
+	}
 
 	public String getName() {
 		return this.name;
