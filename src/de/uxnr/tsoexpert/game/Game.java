@@ -45,7 +45,6 @@ public class Game {
 						Node attribute = attributes.item(y);
 						if (attribute.getNodeName().equalsIgnoreCase("name")) {
 							name = attribute.getNodeValue();
-							System.out.println(name);
 						}
 					}
 					Resource r = Resource.getByName(name);
