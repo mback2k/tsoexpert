@@ -1,8 +1,6 @@
 package de.uxnr.tsoexpert.game;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -13,8 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class Game {
-
-	private final Map<Integer, Buff> BuffMap = new HashMap<Integer, Buff>();
 
 	public static void main(String args[]) throws Exception {
 		File file = new File("res/GFX/game_settings.xml");
@@ -33,7 +29,6 @@ public class Game {
 
 	private static void parseResources(Document d, Game game) throws InvalidGameSettingsException {
 		NodeList resourceDefinitions = d.getElementsByTagName("ResourceDefinitions");
-		Map<String, Resource> resourceMap = new HashMap<String, Resource>();
 		if (resourceDefinitions.getLength() == 1) {
 			NodeList childNodes = resourceDefinitions.item(0).getChildNodes();
 			for (int x = 0; x < childNodes.getLength(); x++) {
