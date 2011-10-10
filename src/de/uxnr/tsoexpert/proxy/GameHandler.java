@@ -16,6 +16,9 @@ import de.uxnr.amf.v3.AMF3_Type;
 import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.HostHandler;
+import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
+import de.uxnr.tsoexpert.game.communication.vo.QuestVO;
+import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 
 public class GameHandler implements HostHandler {
 	public static final String ITEM_BODY					= "body";
@@ -24,11 +27,19 @@ public class GameHandler implements HostHandler {
 	public static final String VO_SERVER_RESPONSE			= "defaultGame.Communication.VO.dServerResponse";
 	public static final String VO_SERVER_ACTION_RESULT		= "defaultGame.Communication.VO.dServerActionResult";
 	public static final String VO_SERVER_CLIENT_UPDATE		= "defaultGame.Communication.VO.dServerClientUpdateVO";
+
 	public static final String VO_ZONE						= "defaultGame.Communication.VO.dZoneVO";
-	public static final String VO_BUILDING					= "defaultGame.Communication.VO.dBuildingVO";
+	public static final String VO_QUEST						= "defaultGame.Communication.VO.dQuestVO";
+	public static final String VO_BACKGROUND_TILE			= "defaultGame.Communication.VO.dBackgroundTileVO";
 
 	public static final String FLEX_ACKNOWLEDGE_MESSAGE		= "DSK";
 	public static final String FLEX_ARRAY_COLLECTION		= "flex.messaging.io.ArrayCollection";
+
+	static {
+		AMF.registerObjectClass(VO_ZONE, ZoneVO.class);
+		AMF.registerObjectClass(VO_QUEST, QuestVO.class);
+		AMF.registerObjectClass(VO_BACKGROUND_TILE, BackgroundTileVO.class);
+	}
 
 	private boolean parseAMF = false;
 
@@ -58,7 +69,7 @@ public class GameHandler implements HostHandler {
 			this.parseMessage(message);
 	}
 
-	private void parseMessage(AMF_Message message) {
+	private void parseMessage(AMF_Message message) throws IOException {
 		AMF_Type body = message.getBody();
 
 		if (body instanceof AVMPlusObject) {
@@ -83,20 +94,23 @@ public class GameHandler implements HostHandler {
 		}
 	}
 
-	private void parseServerResponse(Object object) {
+	private void parseServerResponse(Object object) throws IOException {
 		object = (Object) object.get(ITEM_DATA);
 		if (object.getClassName().equals(VO_SERVER_ACTION_RESULT)) {
 			this.parseServerActionResult(object);
 		}
 	}
 
-	private void parseServerActionResult(Object object) {
-		object = (Object) object.get(ITEM_DATA);
-		String className = object.getClassName();
-		if (className.equals(FLEX_ARRAY_COLLECTION)) {
-			this.parseArrayCollection((Array) object.getExternal());
-		} else if (className.equals(VO_ZONE)) {
-			this.parseZone(object);
+	private void parseServerActionResult(Object object) throws IOException {
+		AMF3_Type value = object.get(ITEM_DATA);
+		if (value instanceof Object) {
+			object = (Object) value;
+			String className = object.getClassName();
+			if (className.equals(FLEX_ARRAY_COLLECTION)) {
+				this.parseArrayCollection((Array) object.getExternal());
+			}
+		} else {
+			System.out.println(value.getClass().getName());
 		}
 	}
 
@@ -117,26 +131,18 @@ public class GameHandler implements HostHandler {
 		System.out.println(object.keySet());
 	}
 
-	private void parseZone(Object object) {
-		System.out.println(object.getClassName());
-
-		Array buildings = (Array) ((Object) object.get("buildings")).getExternal();
-		for (AMF3_Type value : buildings.values()) {
-			if (value instanceof Object) {
-				object = (Object) value;
-				if (object.getClassName().equals(VO_BUILDING)) {
-					this.parseBuilding(object);
-				}
-			}
-		}
-	}
-
-	private void parseBuilding(Object object) {
-		System.out.println(object.get("buildingName_string"));
-	}
-
 	public static void main(String[] args) throws IOException {
 		GameHandler gh = new GameHandler();
-		gh.parseAMF(new FileInputStream(new File("2.amf")));
+		InputStream stream = new FileInputStream(new File("2.amf"));
+
+		long start = System.currentTimeMillis();
+
+		gh.parseAMF(stream);
+
+		long stop = System.currentTimeMillis();
+
+		stream.close();
+
+		System.out.println("parseAMF: " + (stop-start) + "ms");
 	}
 }
