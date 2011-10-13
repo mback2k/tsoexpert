@@ -17,7 +17,7 @@ import de.uxnr.amf.v0.type.AVMPlusObject;
 import de.uxnr.amf.v3.AMF3_Type;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.HostHandler;
-import de.uxnr.tsoexpert.game.DataHandler;
+import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.game.ZoneHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
@@ -29,7 +29,7 @@ public class GameHandler implements HostHandler {
 		Communication.register();
 	}
 
-	private static final Map<Integer, DataHandler<? extends AMF_Type>> dataHandlers = new HashMap<Integer, DataHandler<? extends AMF_Type>>();
+	private static final Map<Integer, IDataHandler<? extends AMF_Type>> dataHandlers = new HashMap<Integer, IDataHandler<? extends AMF_Type>>();
 
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
@@ -112,7 +112,7 @@ public class GameHandler implements HostHandler {
 	private void parseServerActionResult(Integer type, ServerActionResult serverActionResult) throws IOException {
 		AMF3_Type value = serverActionResult.getData();
 
-		for (Entry<Integer, DataHandler<? extends AMF_Type>> handler : dataHandlers.entrySet()) {
+		for (Entry<Integer, IDataHandler<? extends AMF_Type>> handler : dataHandlers.entrySet()) {
 			if (type.equals(handler.getKey())) {
 				try {
 					handler.getValue().getClass().newInstance().handleData(value);
@@ -123,7 +123,7 @@ public class GameHandler implements HostHandler {
 		}
 	}
 
-	public static void addDataHandler(Integer type, DataHandler<? extends AMF_Type> dataHandler) {
+	public static void addDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
 		dataHandlers.put(type, dataHandler);
 	}
 

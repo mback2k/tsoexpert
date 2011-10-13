@@ -13,7 +13,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class XMLHandler implements ResourceHandler {
+public class XMLHandler implements IResourceHandler {
 	private static final Map<String, Document> documents = new HashMap<String, Document>();
 
 	@Override
