@@ -1,11 +1,12 @@
 package de.uxnr.tsoexpert;
 
-import java.io.IOException;
+import org.eclipse.swt.widgets.Display;
 
 import de.uxnr.proxy.Proxy;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
+import de.uxnr.tsoexpert.ui.MainWindow;
 
 public class TSOExpert {
 	public static void main(String[] args) throws IOException, InterruptedException {
@@ -14,6 +15,13 @@ public class TSOExpert {
 		Proxy proxy = new Proxy(8000);
 		proxy.addHostHandler("game(\\d*).diesiedleronline.de", new GameHandler());
 		proxy.addHostHandler("static(\\d*).cdn.ubi.com", new StaticHandler());
-		proxy.run();
+
+		Thread proxyThread = new Thread(proxy);
+		proxyThread.start();
+
+		MainWindow window = new MainWindow();
+		window.setBlockOnOpen(true);
+		window.open();
+		Display.getCurrent().dispose();
 	}
 }
