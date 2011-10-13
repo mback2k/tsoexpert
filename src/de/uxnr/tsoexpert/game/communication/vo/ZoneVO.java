@@ -1,42 +1,41 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
 import java.util.Collection;
+import java.util.Map;
 
 import de.uxnr.amf.v3.AMF3_Object;
-import de.uxnr.amf.v3.type.Array;
-import de.uxnr.amf.v3.type.Object;
 
 public class ZoneVO extends AMF3_Object {
-	private QuestVO activeQuest; // TODO dQuestVO
+	private QuestVO activeQuest;
 	private Collection<BackgroundTileVO> backgroundTiles;
-	private Array buffProduction_vector;
-	private Array buildings;
-	private Object buildQueue; // TODO dBuildQueueVO
-	private Array dataTracking_vector;
-	private Array depositGroups;
-	private Array depositQualities;
-	private Array deposits;
-	private Array freeLandscapes;
-	private Array gameTickCommands_vector;
-	private Integer gameTickRefreshCounter;
-	private Array landingFields;
-	private Array landscapes;
-	private Double lastGameTickRefreshTime;
-	private Object map_PlayerID_Army;
-	private Array mapValues;
-	private Array militaryUnitRecruitments_vector;
-	private Array playersOnMap;
-	private Object questDefinitionContainer; // TODO dQuestDefinitionContainerVO
+	private Collection<Object> buffProduction_vector; // TODO
+	private Collection<BuildingVO> buildings;
+	private BuildQueueVO buildQueue;
+	private Collection<DataTrackingVO> dataTracking_vector;
+	private Collection<DepositGroupVO> depositGroups;
+	private Collection<DepositQualityVO> depositQualities;
+	private Collection<DepositVO> deposits;
+	private Collection<FreeLandscapeVO> freeLandscapes;
+	private Collection<GameTickCommandVO> gameTickCommands_vector;
+	private int gameTickRefreshCounter;
+	private Collection<LandingFieldVO> landingFields;
+	private Collection<LandscapeVO> landscapes;
+	private double lastGameTickRefreshTime;
+	private Map<String, ArmyVO> map_PlayerID_Army;
+	private Collection<MapValueItemVO> mapValues;
+	private Collection<Object> militaryUnitRecruitments_vector; // TODO
+	private Collection<PlayerVO> playersOnMap;
+	private QuestDefinitionContainerVO questDefinitionContainer;
 	private String questFileName;
-	private Array resourceCreations;
-	private Object resourcesVO; // TODO dResourcesVO
-	private Array sectors;
-	private Double serverTime;
-	private Array specialists_vector;
-	private Array streets;
+	private Collection<ResourceCreationVO> resourceCreations;
+	private ResourcesVO resourcesVO;
+	private Collection<SectorVO> sectors;
+	private double serverTime;
+	private Collection<SpecialistVO> specialists_vector;
+	private Collection<StreetVO> streets;
 	private String zoneMapName;
-	private Integer zoneOwnerPlayerID;
-	private Integer zoneVisitorPlayerID;
+	private int zoneOwnerPlayerID;
+	private int zoneVisitorPlayerID;
 
 	public QuestVO getActiveQuest() {
 		return this.activeQuest;
@@ -46,75 +45,75 @@ public class ZoneVO extends AMF3_Object {
 		return this.backgroundTiles;
 	}
 
-	public Array getBuffProduction_vector() {
+	public Collection<Object> getBuffProduction_vector() {
 		return this.buffProduction_vector;
 	}
 
-	public Array getBuildings() {
+	public Collection<BuildingVO> getBuildings() {
 		return this.buildings;
 	}
 
-	public Object getBuildQueue() {
+	public BuildQueueVO getBuildQueue() {
 		return this.buildQueue;
 	}
 
-	public Array getDataTracking_vector() {
+	public Collection<DataTrackingVO> getDataTracking_vector() {
 		return this.dataTracking_vector;
 	}
 
-	public Array getDepositGroups() {
+	public Collection<DepositGroupVO> getDepositGroups() {
 		return this.depositGroups;
 	}
 
-	public Array getDepositQualities() {
+	public Collection<DepositQualityVO> getDepositQualities() {
 		return this.depositQualities;
 	}
 
-	public Array getDeposits() {
+	public Collection<DepositVO> getDeposits() {
 		return this.deposits;
 	}
 
-	public Array getFreeLandscapes() {
+	public Collection<FreeLandscapeVO> getFreeLandscapes() {
 		return this.freeLandscapes;
 	}
 
-	public Array getGameTickCommands_vector() {
+	public Collection<GameTickCommandVO> getGameTickCommands_vector() {
 		return this.gameTickCommands_vector;
 	}
 
-	public Integer getGameTickRefreshCounter() {
+	public int getGameTickRefreshCounter() {
 		return this.gameTickRefreshCounter;
 	}
 
-	public Array getLandingFields() {
+	public Collection<LandingFieldVO> getLandingFields() {
 		return this.landingFields;
 	}
 
-	public Array getLandscapes() {
+	public Collection<LandscapeVO> getLandscapes() {
 		return this.landscapes;
 	}
 
-	public Double getLastGameTickRefreshTime() {
+	public double getLastGameTickRefreshTime() {
 		return this.lastGameTickRefreshTime;
 	}
 
-	public Object getMap_PlayerID_Army() {
+	public Map<String, ArmyVO> getMap_PlayerID_Army() {
 		return this.map_PlayerID_Army;
 	}
 
-	public Array getMapValues() {
+	public Collection<MapValueItemVO> getMapValues() {
 		return this.mapValues;
 	}
 
-	public Array getMilitaryUnitRecruitments_vector() {
+	public Collection<Object> getMilitaryUnitRecruitments_vector() {
 		return this.militaryUnitRecruitments_vector;
 	}
 
-	public Array getPlayersOnMap() {
+	public Collection<PlayerVO> getPlayersOnMap() {
 		return this.playersOnMap;
 	}
 
-	public Object getQuestDefinitionContainer() {
+	public QuestDefinitionContainerVO getQuestDefinitionContainer() {
 		return this.questDefinitionContainer;
 	}
 
@@ -122,27 +121,27 @@ public class ZoneVO extends AMF3_Object {
 		return this.questFileName;
 	}
 
-	public Array getResourceCreations() {
+	public Collection<ResourceCreationVO> getResourceCreations() {
 		return this.resourceCreations;
 	}
 
-	public Object getResourcesVO() {
+	public ResourcesVO getResourcesVO() {
 		return this.resourcesVO;
 	}
 
-	public Array getSectors() {
+	public Collection<SectorVO> getSectors() {
 		return this.sectors;
 	}
 
-	public Double getServerTime() {
+	public double getServerTime() {
 		return this.serverTime;
 	}
 
-	public Array getSpecialists_vector() {
+	public Collection<SpecialistVO> getSpecialists_vector() {
 		return this.specialists_vector;
 	}
 
-	public Array getStreets() {
+	public Collection<StreetVO> getStreets() {
 		return this.streets;
 	}
 
@@ -150,11 +149,11 @@ public class ZoneVO extends AMF3_Object {
 		return this.zoneMapName;
 	}
 
-	public Integer getZoneOwnerPlayerID() {
+	public int getZoneOwnerPlayerID() {
 		return this.zoneOwnerPlayerID;
 	}
 
-	public Integer getZoneVisitorPlayerID() {
+	public int getZoneVisitorPlayerID() {
 		return this.zoneVisitorPlayerID;
 	}
 }

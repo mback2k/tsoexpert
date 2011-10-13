@@ -6,33 +6,33 @@ import de.uxnr.amf.v3.AMF3_Object;
 
 public class QuestVO extends AMF3_Object {
 	private String activeQuest_string;
-	private Integer activeQuestMode;
-	private Collection<AMF3_Object> questTriggersFinished;
-	private Boolean questWindowShowState;
-	private Boolean rewardWindowShowState;
-	private Double startQuestTime;
+	private int activeQuestMode;
+	private Collection<QuestTriggerVO> questTriggersFinished;
+	private boolean questWindowShowState;
+	private boolean rewardWindowShowState;
+	private double startQuestTime;
 
 	public String getActiveQuest_string() {
 		return this.activeQuest_string;
 	}
 
-	public Integer getActiveQuestMode() {
+	public int getActiveQuestMode() {
 		return this.activeQuestMode;
 	}
 
-	public Collection<AMF3_Object> getQuestTriggersFinished() {
+	public Collection<QuestTriggerVO> getQuestTriggersFinished() {
 		return this.questTriggersFinished;
 	}
 
-	public Boolean getQuestWindowShowState() {
+	public boolean getQuestWindowShowState() {
 		return this.questWindowShowState;
 	}
 
-	public Boolean getRewardWindowShowState() {
+	public boolean getRewardWindowShowState() {
 		return this.rewardWindowShowState;
 	}
 
-	public Double getStartQuestTime() {
+	public double getStartQuestTime() {
 		return this.startQuestTime;
 	}
 }
