@@ -14,6 +14,7 @@ import de.uxnr.amf.AMF_Message;
 import de.uxnr.amf.AMF_Type;
 import de.uxnr.amf.flex.type.AcknowledgeMessage;
 import de.uxnr.amf.v0.type.AVMPlusObject;
+import de.uxnr.amf.v0.type.StrictArray;
 import de.uxnr.amf.v3.AMF3_Type;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.HostHandler;
@@ -67,12 +68,22 @@ public class GameHandler implements HostHandler {
 		AMF_Type body = message.getBody();
 
 		if (body instanceof AVMPlusObject) {
-			this.parseAVMPlusObject(body);
+			this.parseAVMPlusObject((AVMPlusObject) body);
+		} else if (body instanceof StrictArray) {
+			this.parseStrictArray((StrictArray) body);
 		}
 	}
 
-	private void parseAVMPlusObject(AMF_Type type) throws IOException {
-		AMF3_Type value = ((AVMPlusObject) type).get();
+	private void parseStrictArray(StrictArray strictArray) throws IOException {
+		for (AMF_Type value : strictArray.values()) {
+			if (value instanceof AVMPlusObject) {
+				this.parseAVMPlusObject((AVMPlusObject) value);
+			}
+		}
+	}
+
+	private void parseAVMPlusObject(AVMPlusObject plusObject) throws IOException {
+		AMF3_Type value = plusObject.get();
 
 		if (value instanceof Object) {
 			Object object = ((Object) value);
