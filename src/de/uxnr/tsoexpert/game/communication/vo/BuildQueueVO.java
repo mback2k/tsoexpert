@@ -1,14 +1,14 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class BuildQueueVO extends AMF3_Object {
-	private Collection<BuildingVO> buildings;
+	private List<BuildingVO> buildings;
 	private int maxCount;
 
-	public Collection<BuildingVO> getBuildings() {
+	public List<BuildingVO> getBuildings() {
 		return this.buildings;
 	}
 

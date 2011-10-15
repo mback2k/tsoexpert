@@ -1,6 +1,6 @@
 package de.uxnr.tsoexpert.game.communication.vo.guild;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
@@ -8,7 +8,7 @@ public class GuildVO extends AMF3_Object {
 	private String motd;
 	private int bannerID;
 	private String name;
-	private Collection<Object> log;
+	private List<Object> log;
 	private int size;
 	private int id;
 	private double cacheTimeStamp;
@@ -17,8 +17,8 @@ public class GuildVO extends AMF3_Object {
 	private double foundTime;
 	private String tag;
 	private String description;
-	private Collection<Object> ranks;
-	private Collection<Object> members;
+	private List<Object> ranks;
+	private List<Object> members;
 
 	public String getMotd() {
 		return this.motd;
@@ -32,7 +32,7 @@ public class GuildVO extends AMF3_Object {
 		return this.name;
 	}
 
-	public Collection<Object> getLog() {
+	public List<Object> getLog() {
 		return this.log;
 	}
 
@@ -68,11 +68,11 @@ public class GuildVO extends AMF3_Object {
 		return this.description;
 	}
 
-	public Collection<Object> getRanks() {
+	public List<Object> getRanks() {
 		return this.ranks;
 	}
 
-	public Collection<Object> getMembers() {
+	public List<Object> getMembers() {
 		return this.members;
 	}
 }

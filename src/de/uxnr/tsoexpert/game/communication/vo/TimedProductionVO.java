@@ -1,6 +1,6 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
@@ -12,7 +12,7 @@ public class TimedProductionVO extends AMF3_Object {
 	private int productionType;
 	private String type_string;
 	private UniqueID uniqueId;
-	private Collection<UniqueID> uniqueIds;
+	private List<UniqueID> uniqueIds;
 
 	public int getAmount() {
 		return this.amount;
@@ -42,7 +42,7 @@ public class TimedProductionVO extends AMF3_Object {
 		return this.uniqueId;
 	}
 
-	public Collection<UniqueID> getUniqueIds() {
+	public List<UniqueID> getUniqueIds() {
 		return this.uniqueIds;
 	}
 }

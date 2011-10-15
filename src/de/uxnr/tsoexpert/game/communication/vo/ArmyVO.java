@@ -1,13 +1,13 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class ArmyVO extends AMF3_Object {
-	private Collection<SquadVO> squads;
+	private List<SquadVO> squads;
 
-	public Collection<SquadVO> getSquads() {
+	public List<SquadVO> getSquads() {
 		return this.squads;
 	}
 }

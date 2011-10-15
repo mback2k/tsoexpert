@@ -1,16 +1,16 @@
 package de.uxnr.tsoexpert.game.communication.vo.update;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class LootItemsVO extends AMF3_Object {
-	private Collection<Object> items;
+	private List<Object> items;
 	private int mailId;
 	private int shopItemId;
-	private Collection<Object> uniqueIDs;
+	private List<Object> uniqueIDs;
 
-	public Collection<Object> getItems() {
+	public List<Object> getItems() {
 		return this.items;
 	}
 
@@ -22,7 +22,7 @@ public class LootItemsVO extends AMF3_Object {
 		return this.shopItemId;
 	}
 
-	public Collection<Object> getUniqueIDs() {
+	public List<Object> getUniqueIDs() {
 		return this.uniqueIDs;
 	}
 }

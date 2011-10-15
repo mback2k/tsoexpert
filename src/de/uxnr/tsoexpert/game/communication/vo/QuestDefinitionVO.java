@@ -1,20 +1,20 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class QuestDefinitionVO extends AMF3_Object {
-	private Collection<QuestDefinitionHintVO> questHints;
+	private List<QuestDefinitionHintVO> questHints;
 	private String questName_string;
-	private Collection<QuestDefinitionPostrequisitsVO> questPostrequisits;
-	private Collection<QuestDefinitionRewardVO> questReward;
-	private Collection<QuestDefinitionTriggerVO> questTriggers;
+	private List<QuestDefinitionPostrequisitsVO> questPostrequisits;
+	private List<QuestDefinitionRewardVO> questReward;
+	private List<QuestDefinitionTriggerVO> questTriggers;
 	private boolean showQuestWindow;
 	private boolean showRewardWindow;
 	private String specialType_string;
 
-	public Collection<QuestDefinitionHintVO> getQuestHints() {
+	public List<QuestDefinitionHintVO> getQuestHints() {
 		return this.questHints;
 	}
 
@@ -22,15 +22,15 @@ public class QuestDefinitionVO extends AMF3_Object {
 		return this.questName_string;
 	}
 
-	public Collection<QuestDefinitionPostrequisitsVO> getQuestPostrequisits() {
+	public List<QuestDefinitionPostrequisitsVO> getQuestPostrequisits() {
 		return this.questPostrequisits;
 	}
 
-	public Collection<QuestDefinitionRewardVO> getQuestReward() {
+	public List<QuestDefinitionRewardVO> getQuestReward() {
 		return this.questReward;
 	}
 
-	public Collection<QuestDefinitionTriggerVO> getQuestTriggers() {
+	public List<QuestDefinitionTriggerVO> getQuestTriggers() {
 		return this.questTriggers;
 	}
 

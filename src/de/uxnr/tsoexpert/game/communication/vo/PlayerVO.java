@@ -1,31 +1,31 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 import de.uxnr.tsoexpert.game.communication.vo.guild.GuildVO;
 
 public class PlayerVO extends AMF3_Object {
-	private Collection<BuffVO> availableBuffs_vector;
+	private List<BuffVO> availableBuffs_vector;
 	private int avatarId;
 	private boolean canCheat;
 	private int cityLevel;
 	private int currentMaximumBuildingsCountAll;
-	private Collection<SectorDiscoveryVO> discoveredSectors;
+	private List<SectorDiscoveryVO> discoveredSectors;
 	private int explorersAmount;
 	private int generalsAmount;
 	private int geologistsAmount;
 	private GuildVO guildVO;
 	private int playerLevel;
-	private Collection<PurchasedShopItemVO> purchasedShopItems_vector;
-	private Collection<ResourceVO> resources;
+	private List<PurchasedShopItemVO> purchasedShopItems_vector;
+	private List<ResourceVO> resources;
 	private UniqueID uniqueID;
 	private int userID;
 	private String username_string;
 	private int xp;
 	private int zoneID;
 
-	public Collection<BuffVO> getAvailableBuffs_vector() {
+	public List<BuffVO> getAvailableBuffs_vector() {
 		return this.availableBuffs_vector;
 	}
 
@@ -41,7 +41,7 @@ public class PlayerVO extends AMF3_Object {
 		return this.currentMaximumBuildingsCountAll;
 	}
 
-	public Collection<SectorDiscoveryVO> getDiscoveredSectors() {
+	public List<SectorDiscoveryVO> getDiscoveredSectors() {
 		return this.discoveredSectors;
 	}
 
@@ -65,11 +65,11 @@ public class PlayerVO extends AMF3_Object {
 		return this.playerLevel;
 	}
 
-	public Collection<PurchasedShopItemVO> getPurchasedShopItems_vector() {
+	public List<PurchasedShopItemVO> getPurchasedShopItems_vector() {
 		return this.purchasedShopItems_vector;
 	}
 
-	public Collection<ResourceVO> getResources() {
+	public List<ResourceVO> getResources() {
 		return this.resources;
 	}
 
