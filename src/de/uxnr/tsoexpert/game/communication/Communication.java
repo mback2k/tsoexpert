@@ -34,7 +34,7 @@ public class Communication {
 			for (Class classVO : classes) {
 				String className = classVO.getName().replace(pckname, mapping[1]);
 
-				AMF.registerObjectClass(className, classVO);
+				AMF.registerClass(className, classVO);
 			}
 		}
 	}
