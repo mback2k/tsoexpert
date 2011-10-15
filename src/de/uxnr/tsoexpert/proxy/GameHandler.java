@@ -5,52 +5,47 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.uxnr.amf.AMF;
 import de.uxnr.amf.AMF_Message;
 import de.uxnr.amf.AMF_Type;
-import de.uxnr.amf.flex.msg.AcknowledgeMessage;
+import de.uxnr.amf.flex.type.AcknowledgeMessage;
+import de.uxnr.amf.flex.type.CommandMessage;
+import de.uxnr.amf.flex.type.RemotingMessage;
 import de.uxnr.amf.v0.type.AVMPlusObject;
+import de.uxnr.amf.v0.type.StrictArray;
 import de.uxnr.amf.v3.AMF3_Type;
 import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.HostHandler;
-import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
-import de.uxnr.tsoexpert.game.communication.vo.QuestVO;
-import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+import de.uxnr.tsoexpert.game.IDataHandler;
+import de.uxnr.tsoexpert.game.PlayerListHandler;
+import de.uxnr.tsoexpert.game.ZoneHandler;
+import de.uxnr.tsoexpert.game.communication.Communication;
+import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
+import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
+import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
 
 public class GameHandler implements HostHandler {
-	public static final String ITEM_BODY					= "body";
-	public static final String ITEM_DATA					= "data";
-
-	public static final String VO_SERVER_RESPONSE			= "defaultGame.Communication.VO.dServerResponse";
-	public static final String VO_SERVER_ACTION_RESULT		= "defaultGame.Communication.VO.dServerActionResult";
-	public static final String VO_SERVER_CLIENT_UPDATE		= "defaultGame.Communication.VO.dServerClientUpdateVO";
-
-	public static final String VO_ZONE						= "defaultGame.Communication.VO.dZoneVO";
-	public static final String VO_QUEST						= "defaultGame.Communication.VO.dQuestVO";
-	public static final String VO_BACKGROUND_TILE			= "defaultGame.Communication.VO.dBackgroundTileVO";
-
-	public static final String FLEX_ACKNOWLEDGE_MESSAGE		= "DSK";
-	public static final String FLEX_ARRAY_COLLECTION		= "flex.messaging.io.ArrayCollection";
-
 	static {
-		AMF.registerObjectClass(VO_ZONE, ZoneVO.class);
-		AMF.registerObjectClass(VO_QUEST, QuestVO.class);
-		AMF.registerObjectClass(VO_BACKGROUND_TILE, BackgroundTileVO.class);
+		Communication.register();
 	}
 
-	private boolean parseAMF = false;
+	private static final Map<Integer, IDataHandler<? extends AMF_Type>> dataHandlers = new HashMap<Integer, IDataHandler<? extends AMF_Type>>();
 
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
 			Map<String, String> requestHeaders, InputStream body) throws IOException {
 
 		String contentType = requestHeaders.get("content-type");
-
-		if (contentType != null)
-			this.parseAMF = contentType.equalsIgnoreCase("application/x-amf");
+		if (contentType != null) {
+			if (contentType.equalsIgnoreCase("application/x-amf")) {
+				this.parseAMF(body);
+			}
+		}
 	}
 
 	@Override
@@ -58,8 +53,12 @@ public class GameHandler implements HostHandler {
 			Map<String, String> requestHeaders,
 			Map<String, String> responseHeaders, InputStream body) throws IOException {
 
-		if (this.parseAMF)
-			this.parseAMF(body);
+		String contentType = responseHeaders.get("content-type");
+		if (contentType != null) {
+			if (contentType.equalsIgnoreCase("application/x-amf")) {
+				this.parseAMF(body);
+			}
+		}
 	}
 
 	private void parseAMF(InputStream body) throws IOException {
@@ -73,65 +72,112 @@ public class GameHandler implements HostHandler {
 		AMF_Type body = message.getBody();
 
 		if (body instanceof AVMPlusObject) {
-			AMF3_Type value = ((AVMPlusObject) body).get();
+			this.parseAVMPlusObject((AVMPlusObject) body);
+		} else if (body instanceof StrictArray) {
+			this.parseStrictArray((StrictArray) body);
+		}
+	}
 
-			if (value instanceof Object) {
-				Object object = ((Object) value);
-
-				if (object.getClassName().equals(FLEX_ACKNOWLEDGE_MESSAGE)) {
-					value = object.getExternal();
-
-					if (value instanceof AcknowledgeMessage) {
-						AcknowledgeMessage msg = (AcknowledgeMessage) value;
-
-						object = (Object) msg.get(GameHandler.ITEM_BODY);
-						if (object.getClassName().equals(VO_SERVER_RESPONSE)) {
-							this.parseServerResponse(object);
-						}
-					}
-				}
+	private void parseStrictArray(StrictArray strictArray) throws IOException {
+		for (AMF_Type value : strictArray.values()) {
+			if (value instanceof AVMPlusObject) {
+				this.parseAVMPlusObject((AVMPlusObject) value);
 			}
 		}
 	}
 
-	private void parseServerResponse(Object object) throws IOException {
-		object = (Object) object.get(ITEM_DATA);
-		if (object.getClassName().equals(VO_SERVER_ACTION_RESULT)) {
-			this.parseServerActionResult(object);
-		}
-	}
+	private void parseAVMPlusObject(AVMPlusObject plusObject) throws IOException {
+		AMF3_Type value = plusObject.get();
 
-	private void parseServerActionResult(Object object) throws IOException {
-		AMF3_Type value = object.get(ITEM_DATA);
 		if (value instanceof Object) {
-			object = (Object) value;
-			String className = object.getClassName();
-			if (className.equals(FLEX_ARRAY_COLLECTION)) {
-				this.parseArrayCollection((Array) object.getExternal());
+			Object object = ((Object) value);
+
+			if (object instanceof AcknowledgeMessage) {
+				this.parseAcknowledgeMessage((AcknowledgeMessage) object);
+
+			} else if (object instanceof CommandMessage) {
+				this.parseCommandMessage((CommandMessage) object);
+
+			} else if (object instanceof RemotingMessage) {
+				this.parseRemotingMessage((RemotingMessage) object);
+
+			} else {
+				System.err.println(object.getClassName());
 			}
-		} else {
-			System.out.println(value.getClass().getName());
 		}
 	}
 
-	private void parseArrayCollection(Array array) {
+	private void parseAcknowledgeMessage(AcknowledgeMessage acknowledgeMessage) throws IOException {
+		AMF3_Type value = acknowledgeMessage.getBody();
+
+		if (value instanceof ServerResponse) {
+			this.parseServerResponse((ServerResponse) value);
+		}
+	}
+
+	private void parseCommandMessage(CommandMessage commandMessage) throws IOException {
+		//	System.out.println("CommandMessage:");
+		//	System.out.println(commandMessage.getOperation());
+	}
+
+	private void parseRemotingMessage(RemotingMessage remotingMessage) throws IOException {
+		AMF3_Type value = remotingMessage.getBody();
+
+		if (value instanceof Array) {
+			this.parseArray((Array) value);
+		}
+	}
+
+	private void parseArray(Array array) throws IOException {
 		for (AMF3_Type value : array.values()) {
-			if (value instanceof Object) {
-				Object object = (Object) value;
-				if (object.getClassName().equals(VO_SERVER_CLIENT_UPDATE)) {
-					this.parseServerClientUpdate(object);
-				} else {
-					System.out.println(object.getClassName());
+			if (value instanceof ServerCall) {
+				this.parseServerCall((ServerCall) value);
+			}
+		}
+	}
+
+	private void parseServerCall(ServerCall serverCall) {
+		//	System.out.println("ServerCall:");
+		//	System.out.println(serverCall.getType());
+		//	System.out.println(serverCall.getZoneID());
+	}
+
+	private void parseServerResponse(ServerResponse serverResponse) throws IOException {
+		Integer type = serverResponse.getType();
+		AMF3_Type value = serverResponse.getData();
+
+		if (value instanceof ServerActionResult) {
+			this.parseServerActionResult(type, (ServerActionResult) value);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void parseServerActionResult(Integer type, ServerActionResult serverActionResult) throws IOException {
+		AMF3_Type value = serverActionResult.getData();
+
+		for (Entry<Integer, IDataHandler<? extends AMF_Type>> handler : dataHandlers.entrySet()) {
+			if (type.equals(handler.getKey())) {
+				try {
+					handler.getValue().getClass().newInstance().handleData(value);
+				} catch (Exception e) {
+					throw new IOException(e);
 				}
 			}
 		}
 	}
 
-	private void parseServerClientUpdate(Object object) {
-		System.out.println(object.keySet());
+	public static void addDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
+		dataHandlers.put(type, dataHandler);
+	}
+
+	public static void removeDataHandler(Integer type) {
+		dataHandlers.remove(type);
 	}
 
 	public static void main(String[] args) throws IOException {
+		GameHandler.addDataHandler(1001, new ZoneHandler());
+		GameHandler.addDataHandler(1014, new PlayerListHandler());
+
 		GameHandler gh = new GameHandler();
 		InputStream stream = new FileInputStream(new File("2.amf"));
 

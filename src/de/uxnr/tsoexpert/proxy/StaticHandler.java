@@ -19,7 +19,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import sun.misc.BASE64Decoder;
 import de.uxnr.proxy.HostHandler;
-import de.uxnr.tsoexpert.resource.ResourceHandler;
+import de.uxnr.tsoexpert.resource.IResourceHandler;
 
 @SuppressWarnings("restriction")
 public class StaticHandler implements HostHandler {
@@ -27,7 +27,7 @@ public class StaticHandler implements HostHandler {
 	public static final String RESOURCE_PATH = "res/";
 	public static final String PRIVATE_KEY_FILE = "PRIVATE_KEY";
 	
-	private static final Map<String, ResourceHandler> resourceHandlers = new HashMap<String, ResourceHandler>();
+	private static final Map<String, IResourceHandler> resourceHandlers = new HashMap<String, IResourceHandler>();
 	
 	private String path = null;
 	
@@ -136,7 +136,7 @@ public class StaticHandler implements HostHandler {
 	public void handleResource(File file) throws IOException {
 		String path = file.getPath();
 		
-		for (Entry<String, ResourceHandler> handler : resourceHandlers.entrySet()) {
+		for (Entry<String, IResourceHandler> handler : resourceHandlers.entrySet()) {
 			if (path.matches(handler.getKey())) {
 				try {
 					handler.getValue().getClass().newInstance().handleResource(file);
@@ -147,7 +147,7 @@ public class StaticHandler implements HostHandler {
 		}
 	}
 	
-	public static void addResourceHandler(String path, ResourceHandler resourceHandler) {
+	public static void addResourceHandler(String path, IResourceHandler resourceHandler) {
 		resourceHandlers.put(path, resourceHandler);
 	}
 	
