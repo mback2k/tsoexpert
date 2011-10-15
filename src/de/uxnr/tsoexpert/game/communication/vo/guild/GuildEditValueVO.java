@@ -1,19 +1,19 @@
 package de.uxnr.tsoexpert.game.communication.vo.guild;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class GuildEditValueVO extends AMF3_Object {
 	private String newValue;
-	private Collection<Object> parameters; // TODO
+	private List<Object> parameters; // TODO
 	private int type;
 
 	public String getNewValue() {
 		return this.newValue;
 	}
 
-	public Collection<Object> getParameters() {
+	public List<Object> getParameters() {
 		return this.parameters;
 	}
 

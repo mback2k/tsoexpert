@@ -1,13 +1,13 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class QuestDefinitionRewardVO extends AMF3_Object {
 	private int amount;
 	private String name_string;
-	private Collection<QuestTriggerVO> rewardTriggers;
+	private List<QuestTriggerVO> rewardTriggers;
 	private int type;
 
 	public int getAmount() {
@@ -18,7 +18,7 @@ public class QuestDefinitionRewardVO extends AMF3_Object {
 		return this.name_string;
 	}
 
-	public Collection<QuestTriggerVO> getRewardTriggers() {
+	public List<QuestTriggerVO> getRewardTriggers() {
 		return this.rewardTriggers;
 	}
 

@@ -1,6 +1,6 @@
 package de.uxnr.tsoexpert.game.communication.vo.update;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
@@ -8,7 +8,7 @@ public class AdventureClientInfoVO extends AMF3_Object {
 	private String adventureName;
 	private double collectedTime;
 	private int ownerPlayerID;
-	private Collection<AdventurePlayerVO> players;
+	private List<AdventurePlayerVO> players;
 	private int status;
 	private int zoneID;
 
@@ -24,7 +24,7 @@ public class AdventureClientInfoVO extends AMF3_Object {
 		return this.ownerPlayerID;
 	}
 
-	public Collection<AdventurePlayerVO> getPlayers() {
+	public List<AdventurePlayerVO> getPlayers() {
 		return this.players;
 	}
 

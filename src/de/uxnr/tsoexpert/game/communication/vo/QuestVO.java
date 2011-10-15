@@ -1,13 +1,13 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class QuestVO extends AMF3_Object {
 	private String activeQuest_string;
 	private int activeQuestMode;
-	private Collection<QuestTriggerVO> questTriggersFinished;
+	private List<QuestTriggerVO> questTriggersFinished;
 	private boolean questWindowShowState;
 	private boolean rewardWindowShowState;
 	private double startQuestTime;
@@ -20,7 +20,7 @@ public class QuestVO extends AMF3_Object {
 		return this.activeQuestMode;
 	}
 
-	public Collection<QuestTriggerVO> getQuestTriggersFinished() {
+	public List<QuestTriggerVO> getQuestTriggersFinished() {
 		return this.questTriggersFinished;
 	}
 

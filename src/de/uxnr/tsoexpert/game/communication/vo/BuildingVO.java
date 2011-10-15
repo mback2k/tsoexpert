@@ -1,12 +1,12 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class BuildingVO extends AMF3_Object {
 	private ArmyVO armyVO;
-	private Collection<BuffVO> buffs;
+	private List<BuffVO> buffs;
 	private double buildingCreationTime;
 	private int buildingGrid;
 	private int buildingMode;
@@ -35,7 +35,7 @@ public class BuildingVO extends AMF3_Object {
 		return this.armyVO;
 	}
 
-	public Collection<BuffVO> getBuffs() {
+	public List<BuffVO> getBuffs() {
 		return this.buffs;
 	}
 

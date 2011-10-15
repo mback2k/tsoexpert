@@ -1,6 +1,6 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
@@ -9,7 +9,7 @@ public class AdventureVO extends AMF3_Object {
 	private int adventureDuration;
 	private int adventureID;
 	private int ownerPlayerID;
-	private Collection<PlayerVO> players;
+	private List<PlayerVO> players;
 	private int serverDownDuration;
 	private double startTime;
 	private int state;
@@ -30,7 +30,7 @@ public class AdventureVO extends AMF3_Object {
 		return this.ownerPlayerID;
 	}
 
-	public Collection<PlayerVO> getPlayers() {
+	public List<PlayerVO> getPlayers() {
 		return this.players;
 	}
 

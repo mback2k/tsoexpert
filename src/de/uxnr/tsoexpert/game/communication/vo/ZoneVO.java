@@ -1,38 +1,38 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class ZoneVO extends AMF3_Object {
 	private QuestVO activeQuest;
-	private Collection<BackgroundTileVO> backgroundTiles;
-	private Collection<Object> buffProduction_vector; // TODO
-	private Collection<BuildingVO> buildings;
+	private List<BackgroundTileVO> backgroundTiles;
+	private List<Object> buffProduction_vector; // TODO
+	private List<BuildingVO> buildings;
 	private BuildQueueVO buildQueue;
-	private Collection<DataTrackingVO> dataTracking_vector;
-	private Collection<DepositGroupVO> depositGroups;
-	private Collection<DepositQualityVO> depositQualities;
-	private Collection<DepositVO> deposits;
-	private Collection<FreeLandscapeVO> freeLandscapes;
-	private Collection<GameTickCommandVO> gameTickCommands_vector;
+	private List<DataTrackingVO> dataTracking_vector;
+	private List<DepositGroupVO> depositGroups;
+	private List<DepositQualityVO> depositQualities;
+	private List<DepositVO> deposits;
+	private List<FreeLandscapeVO> freeLandscapes;
+	private List<GameTickCommandVO> gameTickCommands_vector;
 	private int gameTickRefreshCounter;
-	private Collection<LandingFieldVO> landingFields;
-	private Collection<LandscapeVO> landscapes;
+	private List<LandingFieldVO> landingFields;
+	private List<LandscapeVO> landscapes;
 	private double lastGameTickRefreshTime;
 	private Map<String, ArmyVO> map_PlayerID_Army;
-	private Collection<MapValueItemVO> mapValues;
-	private Collection<Object> militaryUnitRecruitments_vector; // TODO
-	private Collection<PlayerVO> playersOnMap;
+	private List<MapValueItemVO> mapValues;
+	private List<Object> militaryUnitRecruitments_vector; // TODO
+	private List<PlayerVO> playersOnMap;
 	private QuestDefinitionContainerVO questDefinitionContainer;
 	private String questFileName;
-	private Collection<ResourceCreationVO> resourceCreations;
+	private List<ResourceCreationVO> resourceCreations;
 	private ResourcesVO resourcesVO;
-	private Collection<SectorVO> sectors;
+	private List<SectorVO> sectors;
 	private double serverTime;
-	private Collection<SpecialistVO> specialists_vector;
-	private Collection<StreetVO> streets;
+	private List<SpecialistVO> specialists_vector;
+	private List<StreetVO> streets;
 	private String zoneMapName;
 	private int zoneOwnerPlayerID;
 	private int zoneVisitorPlayerID;
@@ -41,15 +41,15 @@ public class ZoneVO extends AMF3_Object {
 		return this.activeQuest;
 	}
 
-	public Collection<BackgroundTileVO> getBackgroundTiles() {
+	public List<BackgroundTileVO> getBackgroundTiles() {
 		return this.backgroundTiles;
 	}
 
-	public Collection<Object> getBuffProduction_vector() {
+	public List<Object> getBuffProduction_vector() {
 		return this.buffProduction_vector;
 	}
 
-	public Collection<BuildingVO> getBuildings() {
+	public List<BuildingVO> getBuildings() {
 		return this.buildings;
 	}
 
@@ -57,27 +57,27 @@ public class ZoneVO extends AMF3_Object {
 		return this.buildQueue;
 	}
 
-	public Collection<DataTrackingVO> getDataTracking_vector() {
+	public List<DataTrackingVO> getDataTracking_vector() {
 		return this.dataTracking_vector;
 	}
 
-	public Collection<DepositGroupVO> getDepositGroups() {
+	public List<DepositGroupVO> getDepositGroups() {
 		return this.depositGroups;
 	}
 
-	public Collection<DepositQualityVO> getDepositQualities() {
+	public List<DepositQualityVO> getDepositQualities() {
 		return this.depositQualities;
 	}
 
-	public Collection<DepositVO> getDeposits() {
+	public List<DepositVO> getDeposits() {
 		return this.deposits;
 	}
 
-	public Collection<FreeLandscapeVO> getFreeLandscapes() {
+	public List<FreeLandscapeVO> getFreeLandscapes() {
 		return this.freeLandscapes;
 	}
 
-	public Collection<GameTickCommandVO> getGameTickCommands_vector() {
+	public List<GameTickCommandVO> getGameTickCommands_vector() {
 		return this.gameTickCommands_vector;
 	}
 
@@ -85,11 +85,11 @@ public class ZoneVO extends AMF3_Object {
 		return this.gameTickRefreshCounter;
 	}
 
-	public Collection<LandingFieldVO> getLandingFields() {
+	public List<LandingFieldVO> getLandingFields() {
 		return this.landingFields;
 	}
 
-	public Collection<LandscapeVO> getLandscapes() {
+	public List<LandscapeVO> getLandscapes() {
 		return this.landscapes;
 	}
 
@@ -101,15 +101,15 @@ public class ZoneVO extends AMF3_Object {
 		return this.map_PlayerID_Army;
 	}
 
-	public Collection<MapValueItemVO> getMapValues() {
+	public List<MapValueItemVO> getMapValues() {
 		return this.mapValues;
 	}
 
-	public Collection<Object> getMilitaryUnitRecruitments_vector() {
+	public List<Object> getMilitaryUnitRecruitments_vector() {
 		return this.militaryUnitRecruitments_vector;
 	}
 
-	public Collection<PlayerVO> getPlayersOnMap() {
+	public List<PlayerVO> getPlayersOnMap() {
 		return this.playersOnMap;
 	}
 
@@ -121,7 +121,7 @@ public class ZoneVO extends AMF3_Object {
 		return this.questFileName;
 	}
 
-	public Collection<ResourceCreationVO> getResourceCreations() {
+	public List<ResourceCreationVO> getResourceCreations() {
 		return this.resourceCreations;
 	}
 
@@ -129,7 +129,7 @@ public class ZoneVO extends AMF3_Object {
 		return this.resourcesVO;
 	}
 
-	public Collection<SectorVO> getSectors() {
+	public List<SectorVO> getSectors() {
 		return this.sectors;
 	}
 
@@ -137,11 +137,11 @@ public class ZoneVO extends AMF3_Object {
 		return this.serverTime;
 	}
 
-	public Collection<SpecialistVO> getSpecialists_vector() {
+	public List<SpecialistVO> getSpecialists_vector() {
 		return this.specialists_vector;
 	}
 
-	public Collection<StreetVO> getStreets() {
+	public List<StreetVO> getStreets() {
 		return this.streets;
 	}
 

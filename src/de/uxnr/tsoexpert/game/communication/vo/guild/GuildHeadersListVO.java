@@ -1,15 +1,15 @@
 package de.uxnr.tsoexpert.game.communication.vo.guild;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class GuildHeadersListVO extends AMF3_Object {
-	private Collection<Object> list;
+	private List<Object> list;
 	private int page;
 	private int maxPages;
 
-	public Collection<Object> getList() {
+	public List<Object> getList() {
 		return this.list;
 	}
 

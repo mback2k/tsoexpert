@@ -1,18 +1,18 @@
 package de.uxnr.tsoexpert.game.communication.vo;
 
-import java.util.Collection;
+import java.util.List;
 
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class DataTrackingVO extends AMF3_Object {
 	private int amount;
-	private Collection<DataIntStringVO> dataTracking;
+	private List<DataIntStringVO> dataTracking;
 
 	public int getAmount() {
 		return this.amount;
 	}
 
-	public Collection<DataIntStringVO> getDataTracking() {
+	public List<DataIntStringVO> getDataTracking() {
 		return this.dataTracking;
 	}
 }
