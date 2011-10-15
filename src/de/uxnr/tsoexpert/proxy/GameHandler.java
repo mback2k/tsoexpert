@@ -13,9 +13,12 @@ import de.uxnr.amf.AMF;
 import de.uxnr.amf.AMF_Message;
 import de.uxnr.amf.AMF_Type;
 import de.uxnr.amf.flex.type.AcknowledgeMessage;
+import de.uxnr.amf.flex.type.CommandMessage;
+import de.uxnr.amf.flex.type.RemotingMessage;
 import de.uxnr.amf.v0.type.AVMPlusObject;
 import de.uxnr.amf.v0.type.StrictArray;
 import de.uxnr.amf.v3.AMF3_Type;
+import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.HostHandler;
 import de.uxnr.tsoexpert.game.IDataHandler;
@@ -23,6 +26,7 @@ import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.game.ZoneHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
 import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
+import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
 import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
 
 public class GameHandler implements HostHandler {
@@ -88,17 +92,18 @@ public class GameHandler implements HostHandler {
 		if (value instanceof Object) {
 			Object object = ((Object) value);
 
-			if (object.isExternalizable()) {
-				this.parseExternalizable(object);
+			if (object instanceof AcknowledgeMessage) {
+				this.parseAcknowledgeMessage((AcknowledgeMessage) object);
+
+			} else if (object instanceof CommandMessage) {
+				this.parseCommandMessage((CommandMessage) object);
+
+			} else if (object instanceof RemotingMessage) {
+				this.parseRemotingMessage((RemotingMessage) object);
+
+			} else {
+				System.err.println(object.getClassName());
 			}
-		}
-	}
-
-	private void parseExternalizable(Object object) throws IOException {
-		AMF3_Type value = object.getExternalized();
-
-		if (value instanceof AcknowledgeMessage) {
-			this.parseAcknowledgeMessage((AcknowledgeMessage) value);
 		}
 	}
 
@@ -108,6 +113,33 @@ public class GameHandler implements HostHandler {
 		if (value instanceof ServerResponse) {
 			this.parseServerResponse((ServerResponse) value);
 		}
+	}
+
+	private void parseCommandMessage(CommandMessage commandMessage) throws IOException {
+		System.out.println("CommandMessage:");
+		System.out.println(commandMessage.getOperation());
+	}
+
+	private void parseRemotingMessage(RemotingMessage remotingMessage) throws IOException {
+		AMF3_Type value = remotingMessage.getBody();
+
+		if (value instanceof Array) {
+			this.parseArray((Array) value);
+		}
+	}
+
+	private void parseArray(Array array) throws IOException {
+		for (AMF3_Type value : array.values()) {
+			if (value instanceof ServerCall) {
+				this.parseServerCall((ServerCall) value);
+			}
+		}
+	}
+
+	private void parseServerCall(ServerCall serverCall) {
+		System.out.println("ServerCall:");
+		System.out.println(serverCall.getType());
+		System.out.println(serverCall.getZoneID());
 	}
 
 	private void parseServerResponse(ServerResponse serverResponse) throws IOException {
