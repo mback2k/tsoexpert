@@ -8,6 +8,6 @@ public class PlayerListHandler implements IDataHandler<PlayerListVO> {
 	@Override
 	public void handleData(PlayerListVO data) throws IOException {
 		// TODO Auto-generated method stub
-		System.out.println(data.getPlayers());
+		// System.out.println(data.getPlayers());
 	}
 }

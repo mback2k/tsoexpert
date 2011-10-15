@@ -1,10 +1,17 @@
 package de.uxnr.tsoexpert.ui;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -19,7 +26,14 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
+import de.uxnr.tsoexpert.game.communication.vo.DepositVO;
+import de.uxnr.tsoexpert.game.communication.vo.ResourceVO;
+import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+
 public class MainWindow extends ApplicationWindow {
+	private ZoneVO m_zoneVO;
+
 	private TabFolder tabFolder;
 	private TabItem tbtmMap;
 	private TabItem tbtmBuildings;
@@ -27,12 +41,21 @@ public class MainWindow extends ApplicationWindow {
 	private Canvas canvasMap;
 	private Table tableBuildings;
 	private TableViewer tableViewerBuildings;
+	private TableColumn tblclmnBuildingName;
+	private TableColumn tblclmnBuildingLevel;
 	private Table tableResources;
 	private TableViewer tableViewerResources;
-	private TableColumn tblclmnName;
-	private TableViewerColumn tableViewerColumn;
-	private TableColumn tblclmnAmount;
-	private TableViewerColumn tableViewerColumn_1;
+	private TableColumn tblclmnResourceName;
+	private TableColumn tblclmnResourceAmount;
+	private Composite compositeBuildings;
+	private Composite compositeResources;
+	private TabItem tbtmDeposits;
+	private Composite compositeDeposits;
+	private Table tableDeposits;
+	private TableViewer tableViewerDeposits;
+	private TableColumn tblclmnDepositName;
+	private TableColumn tblclmnDepositAmount;
+	private TableColumn tblclmnDepositCapacity;
 
 	/**
 	 * Create the application window.
@@ -66,26 +89,72 @@ public class MainWindow extends ApplicationWindow {
 		this.tbtmBuildings = new TabItem(this.tabFolder, SWT.NONE);
 		this.tbtmBuildings.setText("Buildings");
 
-		this.tableViewerBuildings = new TableViewer(this.tabFolder, SWT.BORDER | SWT.FULL_SELECTION);
+		this.compositeBuildings = new Composite(this.tabFolder, SWT.NONE);
+		this.tbtmBuildings.setControl(this.compositeBuildings);
+		FillLayout fl_compositeBuildings = new FillLayout(SWT.HORIZONTAL);
+		fl_compositeBuildings.marginHeight = 2;
+		this.compositeBuildings.setLayout(fl_compositeBuildings);
+
+		this.tableViewerBuildings = new TableViewer(this.compositeBuildings, SWT.BORDER | SWT.FULL_SELECTION);
 		this.tableBuildings = this.tableViewerBuildings.getTable();
-		this.tbtmBuildings.setControl(this.tableBuildings);
+		this.tableBuildings.setLinesVisible(true);
+		this.tableBuildings.setHeaderVisible(true);
+
+		this.tblclmnBuildingName = new TableColumn(this.tableBuildings, SWT.NONE);
+		this.tblclmnBuildingName.setWidth(200);
+		this.tblclmnBuildingName.setText("Name");
+
+		this.tblclmnBuildingLevel = new TableColumn(this.tableBuildings, SWT.NONE);
+		this.tblclmnBuildingLevel.setWidth(100);
+		this.tblclmnBuildingLevel.setText("Level");
 
 		this.tbtmResources = new TabItem(this.tabFolder, SWT.NONE);
 		this.tbtmResources.setText("Resources");
 
-		this.tableViewerResources = new TableViewer(this.tabFolder, SWT.BORDER | SWT.FULL_SELECTION);
+		this.compositeResources = new Composite(this.tabFolder, SWT.NONE);
+		this.tbtmResources.setControl(this.compositeResources);
+		FillLayout fl_compositeResources = new FillLayout(SWT.HORIZONTAL);
+		fl_compositeResources.marginHeight = 2;
+		this.compositeResources.setLayout(fl_compositeResources);
+
+		this.tableViewerResources = new TableViewer(this.compositeResources, SWT.BORDER | SWT.FULL_SELECTION);
 		this.tableResources = this.tableViewerResources.getTable();
-		this.tbtmResources.setControl(this.tableResources);
+		this.tableResources.setLinesVisible(true);
+		this.tableResources.setHeaderVisible(true);
 
-		this.tableViewerColumn = new TableViewerColumn(this.tableViewerResources, SWT.NONE);
-		this.tblclmnName = this.tableViewerColumn.getColumn();
-		this.tblclmnName.setWidth(100);
-		this.tblclmnName.setText("Name");
+		this.tblclmnResourceName = new TableColumn(this.tableResources, SWT.NONE);
+		this.tblclmnResourceName.setWidth(200);
+		this.tblclmnResourceName.setText("Name");
 
-		this.tableViewerColumn_1 = new TableViewerColumn(this.tableViewerResources, SWT.NONE);
-		this.tblclmnAmount = this.tableViewerColumn_1.getColumn();
-		this.tblclmnAmount.setWidth(100);
-		this.tblclmnAmount.setText("Amount");
+		this.tblclmnResourceAmount = new TableColumn(this.tableResources, SWT.NONE);
+		this.tblclmnResourceAmount.setWidth(100);
+		this.tblclmnResourceAmount.setText("Amount");
+
+		this.tbtmDeposits = new TabItem(this.tabFolder, SWT.NONE);
+		this.tbtmDeposits.setText("Deposits");
+
+		this.compositeDeposits = new Composite(this.tabFolder, SWT.NONE);
+		this.tbtmDeposits.setControl(this.compositeDeposits);
+		FillLayout fl_compositeDeposits = new FillLayout(SWT.HORIZONTAL);
+		fl_compositeDeposits.marginHeight = 2;
+		this.compositeDeposits.setLayout(fl_compositeDeposits);
+
+		this.tableViewerDeposits = new TableViewer(this.compositeDeposits, SWT.BORDER | SWT.FULL_SELECTION);
+		this.tableDeposits = this.tableViewerDeposits.getTable();
+		this.tableDeposits.setLinesVisible(true);
+		this.tableDeposits.setHeaderVisible(true);
+
+		this.tblclmnDepositName = new TableColumn(this.tableDeposits, SWT.NONE);
+		this.tblclmnDepositName.setWidth(100);
+		this.tblclmnDepositName.setText("Name");
+
+		this.tblclmnDepositAmount = new TableColumn(this.tableDeposits, SWT.NONE);
+		this.tblclmnDepositAmount.setWidth(100);
+		this.tblclmnDepositAmount.setText("Amount");
+
+		this.tblclmnDepositCapacity = new TableColumn(this.tableDeposits, SWT.NONE);
+		this.tblclmnDepositCapacity.setWidth(100);
+		this.tblclmnDepositCapacity.setText("Capacity");
 
 		return container;
 	}
@@ -131,14 +200,20 @@ public class MainWindow extends ApplicationWindow {
 	 * @param args
 	 */
 	public static void main(String args[]) {
-		try {
-			MainWindow window = new MainWindow();
-			window.setBlockOnOpen(true);
-			window.open();
-			Display.getCurrent().dispose();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		Display display = Display.getDefault();
+		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+			@Override
+			public void run() {
+				try {
+					MainWindow window = new MainWindow();
+					window.setBlockOnOpen(true);
+					window.open();
+					Display.getCurrent().dispose();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	/**
@@ -148,7 +223,7 @@ public class MainWindow extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("New Application");
+		newShell.setText("TSO Expert");
 	}
 
 	/**
@@ -157,5 +232,43 @@ public class MainWindow extends ApplicationWindow {
 	@Override
 	protected Point getInitialSize() {
 		return new Point(600, 400);
+	}
+
+	public void setZoneVO(ZoneVO zoneVO) {
+		this.m_zoneVO = zoneVO;
+
+		this.initDataBindings();
+	}
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		ObservableListContentProvider listContentProvider = new ObservableListContentProvider();
+		this.tableViewerBuildings.setContentProvider(listContentProvider);
+		//
+		IObservableMap[] observeMaps = BeansObservables.observeMaps(listContentProvider.getKnownElements(), BuildingVO.class, new String[]{"buildingName_string", "upgradeLevel"});
+		this.tableViewerBuildings.setLabelProvider(new ObservableMapLabelProvider(observeMaps));
+		//
+		IObservableList zoneVOBuildingsObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO, "buildings");
+		this.tableViewerBuildings.setInput(zoneVOBuildingsObserveList);
+		//
+		ObservableListContentProvider listContentProvider_1 = new ObservableListContentProvider();
+		this.tableViewerResources.setContentProvider(listContentProvider_1);
+		//
+		IObservableMap[] observeMaps_1 = BeansObservables.observeMaps(listContentProvider_1.getKnownElements(), ResourceVO.class, new String[]{"name_string", "amount"});
+		this.tableViewerResources.setLabelProvider(new ObservableMapLabelProvider(observeMaps_1));
+		//
+		IObservableList zoneVOgetResourcesVOResources_vectorObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO.getResourcesVO(), "resources_vector");
+		this.tableViewerResources.setInput(zoneVOgetResourcesVOResources_vectorObserveList);
+		//
+		ObservableListContentProvider listContentProvider_2 = new ObservableListContentProvider();
+		this.tableViewerDeposits.setContentProvider(listContentProvider_2);
+		//
+		IObservableMap[] observeMaps_2 = BeansObservables.observeMaps(listContentProvider_2.getKnownElements(), DepositVO.class, new String[]{"name_string", "amount", "maxAmount"});
+		this.tableViewerDeposits.setLabelProvider(new ObservableMapLabelProvider(observeMaps_2));
+		//
+		IObservableList zoneVODepositsObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO, "deposits");
+		this.tableViewerDeposits.setInput(zoneVODepositsObserveList);
+		//
+		return bindingContext;
 	}
 }
