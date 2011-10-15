@@ -116,8 +116,8 @@ public class GameHandler implements HostHandler {
 	}
 
 	private void parseCommandMessage(CommandMessage commandMessage) throws IOException {
-		System.out.println("CommandMessage:");
-		System.out.println(commandMessage.getOperation());
+		//	System.out.println("CommandMessage:");
+		//	System.out.println(commandMessage.getOperation());
 	}
 
 	private void parseRemotingMessage(RemotingMessage remotingMessage) throws IOException {
@@ -137,9 +137,9 @@ public class GameHandler implements HostHandler {
 	}
 
 	private void parseServerCall(ServerCall serverCall) {
-		System.out.println("ServerCall:");
-		System.out.println(serverCall.getType());
-		System.out.println(serverCall.getZoneID());
+		//	System.out.println("ServerCall:");
+		//	System.out.println(serverCall.getType());
+		//	System.out.println(serverCall.getZoneID());
 	}
 
 	private void parseServerResponse(ServerResponse serverResponse) throws IOException {
