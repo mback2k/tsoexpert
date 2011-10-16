@@ -1,9 +1,11 @@
 package de.uxnr.tsoexpert.ui;
 
+import java.util.Vector;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
@@ -32,7 +34,12 @@ import de.uxnr.tsoexpert.game.communication.vo.ResourceVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 
 public class MainWindow extends ApplicationWindow {
-	private ZoneVO m_zoneVO;
+	private final WritableList m_buildings = new WritableList(new Vector<BuildingVO>(), BuildingVO.class);
+	private final WritableList m_resources = new WritableList(new Vector<ResourceVO>(), ResourceVO.class);
+	private final WritableList m_deposits = new WritableList(new Vector<DepositVO>(), DepositVO.class);
+
+	@SuppressWarnings("unused")
+	private DataBindingContext m_bindingContext;
 
 	private TabFolder tabFolder;
 	private TabItem tbtmMap;
@@ -156,6 +163,8 @@ public class MainWindow extends ApplicationWindow {
 		this.tblclmnDepositCapacity.setWidth(100);
 		this.tblclmnDepositCapacity.setText("Capacity");
 
+		this.m_bindingContext = this.initDataBindings();
+
 		return container;
 	}
 
@@ -235,10 +244,16 @@ public class MainWindow extends ApplicationWindow {
 	}
 
 	public void setZoneVO(ZoneVO zoneVO) {
-		this.m_zoneVO = zoneVO;
+		this.m_buildings.clear();
+		this.m_buildings.addAll(zoneVO.getBuildings());
 
-		this.initDataBindings();
+		this.m_resources.clear();
+		this.m_resources.addAll(zoneVO.getResourcesVO().getResources_vector());
+
+		this.m_deposits.clear();
+		this.m_deposits.addAll(zoneVO.getDeposits());
 	}
+
 	protected DataBindingContext initDataBindings() {
 		DataBindingContext bindingContext = new DataBindingContext();
 		//
@@ -248,8 +263,7 @@ public class MainWindow extends ApplicationWindow {
 		IObservableMap[] observeMaps = BeansObservables.observeMaps(listContentProvider.getKnownElements(), BuildingVO.class, new String[]{"buildingName_string", "upgradeLevel"});
 		this.tableViewerBuildings.setLabelProvider(new ObservableMapLabelProvider(observeMaps));
 		//
-		IObservableList zoneVOBuildingsObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO, "buildings");
-		this.tableViewerBuildings.setInput(zoneVOBuildingsObserveList);
+		this.tableViewerBuildings.setInput(this.m_buildings);
 		//
 		ObservableListContentProvider listContentProvider_1 = new ObservableListContentProvider();
 		this.tableViewerResources.setContentProvider(listContentProvider_1);
@@ -257,8 +271,7 @@ public class MainWindow extends ApplicationWindow {
 		IObservableMap[] observeMaps_1 = BeansObservables.observeMaps(listContentProvider_1.getKnownElements(), ResourceVO.class, new String[]{"name_string", "amount"});
 		this.tableViewerResources.setLabelProvider(new ObservableMapLabelProvider(observeMaps_1));
 		//
-		IObservableList zoneVOgetResourcesVOResources_vectorObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO.getResourcesVO(), "resources_vector");
-		this.tableViewerResources.setInput(zoneVOgetResourcesVOResources_vectorObserveList);
+		this.tableViewerResources.setInput(this.m_resources);
 		//
 		ObservableListContentProvider listContentProvider_2 = new ObservableListContentProvider();
 		this.tableViewerDeposits.setContentProvider(listContentProvider_2);
@@ -266,8 +279,7 @@ public class MainWindow extends ApplicationWindow {
 		IObservableMap[] observeMaps_2 = BeansObservables.observeMaps(listContentProvider_2.getKnownElements(), DepositVO.class, new String[]{"name_string", "amount", "maxAmount"});
 		this.tableViewerDeposits.setLabelProvider(new ObservableMapLabelProvider(observeMaps_2));
 		//
-		IObservableList zoneVODepositsObserveList = BeansObservables.observeList(Realm.getDefault(), this.m_zoneVO, "deposits");
-		this.tableViewerDeposits.setInput(zoneVODepositsObserveList);
+		this.tableViewerDeposits.setInput(this.m_deposits);
 		//
 		return bindingContext;
 	}
