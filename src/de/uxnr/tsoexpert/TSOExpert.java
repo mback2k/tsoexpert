@@ -26,8 +26,8 @@ public class TSOExpert {
 		StaticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
 
 		Proxy proxy = new Proxy(8000);
-		proxy.addHostHandler("game(\\d*).diesiedleronline.de", new GameHandler());
-		proxy.addHostHandler("static(\\d*).cdn.ubi.com", new StaticHandler());
+		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", new GameHandler());
+		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", new StaticHandler());
 
 		proxyThread = new Thread(proxy);
 		proxyThread.start();
