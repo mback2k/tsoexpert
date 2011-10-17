@@ -1,9 +1,11 @@
 package de.uxnr.tsoexpert.map;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -15,14 +17,15 @@ import org.w3c.dom.Document;
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
+import de.uxnr.tsoexpert.game.communication.vo.LandscapeVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 import de.uxnr.tsoexpert.resource.GameSetting;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
 public class ZoneMap {
-	private static final Map<String, Image> backgrounds = new HashMap<String, Image>();
-	private static final Map<String, Image> freeLandscapes = new HashMap<String, Image>();
-	private static final Map<String, Image> buildings = new HashMap<String, Image>();
+	private static final Map<String, Sprite> backgrounds = new HashMap<String, Sprite>();
+	private static final Map<String, Sprite> landscapes = new HashMap<String, Sprite>();
+	private static final Map<String, Sprite> buildings = new HashMap<String, Sprite>();
 
 	private final Display display;
 	private final Document gfxDoc;
@@ -80,6 +83,8 @@ public class ZoneMap {
 		}
 
 		GC imageGC = new GC(this.doubleBuffer);
+		imageGC.setAntialias(SWT.OFF);
+		imageGC.setInterpolation(SWT.LOW);
 		imageGC.setBackground(gc.getBackground());
 		imageGC.setForeground(gc.getForeground());
 		imageGC.setFont(gc.getFont());
@@ -92,6 +97,7 @@ public class ZoneMap {
 
 		this.drawBackground(imageGC, clip);
 		this.drawFreeLandscape(imageGC, clip);
+		this.drawLandscape(imageGC, clip);
 		this.drawBuildings(imageGC, clip);
 
 		this.offsetX = Math.min(this.offsetX, this.maxOffsetX);
@@ -110,11 +116,12 @@ public class ZoneMap {
 		int index = 0;
 		for (BackgroundTileVO backgroundTile : this.zoneVO.getBackgroundTiles()) {
 			String name = backgroundTile.getName_string();
-			Image image = this.getBackground(name);
+			Sprite sprite = this.getBackground(name);
 
-			if (image != null) {
-				Rectangle src = image.getBounds();
-				Rectangle dst = image.getBounds();
+			if (sprite != null) {
+				Image image = sprite.getImage();
+				Rectangle src = sprite.getBounds();
+				Rectangle dst = sprite.getBounds();
 
 				dst.x = (int) (((index % length) * width) * this.zoomFactor);
 				dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
@@ -139,14 +146,12 @@ public class ZoneMap {
 	private void drawFreeLandscape(GC gc, Rectangle clip) {
 		for (FreeLandscapeVO freeLandscape : this.zoneVO.getFreeLandscapes()) {
 			String name = freeLandscape.getName_string();
-			Image image = this.getFreeLandscape(name);
+			Sprite sprite = this.getLandscape(name);
 
-			if (name.startsWith("anim_"))
-				continue;
-
-			if (image != null) {
-				Rectangle src = image.getBounds();
-				Rectangle dst = image.getBounds();
+			if (sprite != null) {
+				Image image = sprite.getImage();
+				Rectangle src = sprite.getBounds();
+				Rectangle dst = sprite.getBounds();
 
 				dst.x = (int) (freeLandscape.getX() * this.zoomFactor);
 				dst.y = (int) (freeLandscape.getY() * this.zoomFactor);
@@ -165,6 +170,38 @@ public class ZoneMap {
 		}
 	}
 
+	private void drawLandscape(GC gc, Rectangle clip) {
+		int width = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
+		int height = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
+		int length = 64;
+
+		for (LandscapeVO landscape : this.zoneVO.getLandscapes()) {
+			String name = landscape.getName_string();
+			Sprite sprite = this.getLandscape(name);
+			int index = landscape.getGrid();
+
+			if (sprite != null) {
+				Image image = sprite.getImage();
+				Rectangle src = sprite.getBounds();
+				Rectangle dst = sprite.getBounds();
+
+				dst.x = (int) (((index % length) * width) * this.zoomFactor);
+				dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+				dst.width = (int) (src.width * this.zoomFactor);
+				dst.height = (int) (src.height * this.zoomFactor);
+
+				dst.x -= this.offsetX;
+				dst.y -= this.offsetY;
+
+				if (clip.intersects(dst)) {
+					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height);
+					gc.drawRectangle(dst);
+					gc.drawText("L: "+name, dst.x, dst.y);
+				}
+			}
+		}
+	}
+
 	private void drawBuildings(GC gc, Rectangle clip) {
 		int width = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
 		int height = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
@@ -172,12 +209,13 @@ public class ZoneMap {
 
 		for (BuildingVO building : this.zoneVO.getBuildings()) {
 			String name = building.getBuildingName_string();
-			Image image = this.getBuilding(name);
+			Sprite sprite = this.getBuilding(name);
 			int index = building.getBuildingGrid();
 
-			if (image != null) {
-				Rectangle src = image.getBounds();
-				Rectangle dst = image.getBounds();
+			if (sprite != null) {
+				Image image = sprite.getImage();
+				Rectangle src = sprite.getBounds();
+				Rectangle dst = sprite.getBounds();
 
 				dst.x = (int) (((index % length) * width) * this.zoomFactor);
 				dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
@@ -198,32 +236,36 @@ public class ZoneMap {
 		}
 	}
 
-	private Image getBackground(String name) {
+	private Sprite getBackground(String name) {
 		return this.getImage(name, "res/GFX/background_lib/", "//GameObjects/Backgrounds/Background[@name='"+name+"']/@filename", backgrounds);
 	}
 
-	private Image getFreeLandscape(String name) {
-		return this.getImage(name, "res/GFX/landscape_lib/", "//GameObjects/Landscapes/Landscape[@name='"+name+"']/@filename", freeLandscapes);
+	private Sprite getLandscape(String name) {
+		return this.getImage(name, "res/GFX/landscape_lib/", "//GameObjects/Landscapes/Landscape[@name='"+name+"']/@filename", landscapes);
 	}
 
-	private Image getBuilding(String name) {
+	private Sprite getBuilding(String name) {
 		return this.getImage(name, "res/GFX/building_lib/", "//GameObjects/Buildings/Building[@name='"+name+"']/@filename", buildings);
 	}
 
-	private Image getImage(String name, String path, String xpath, Map<String, Image> cache) {
-		Image image = null;
+	private Sprite getImage(String name, String path, String xpath, Map<String, Sprite> cache) {
+		Sprite sprite = null;
 		if (cache.containsKey(name)) {
-			image = cache.get(name);
+			sprite = cache.get(name);
 		} else {
 			String filename = GameSetting.getString(this.gfxDoc, xpath);
 			if (filename != null) {
 				File file = new File(path+filename);
 				if (file.exists() && file.isFile() && file.canRead()) {
-					image = new Image(this.display, file.getAbsolutePath());
-					cache.put(name, image);
+					try {
+						sprite = new Sprite(file);
+						cache.put(name, sprite);
+					} catch (IOException e) {
+						return null;
+					}
 				}
 			}
 		}
-		return image;
+		return sprite;
 	}
 }
