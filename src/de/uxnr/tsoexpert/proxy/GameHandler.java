@@ -61,7 +61,7 @@ public class GameHandler implements HostHandler {
 		}
 	}
 
-	private void parseAMF(InputStream body) throws IOException {
+	public void parseAMF(InputStream body) throws IOException {
 		AMF amf = new AMF(body);
 
 		for (AMF_Message message : amf.getMessages())

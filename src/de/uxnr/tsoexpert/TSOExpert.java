@@ -19,7 +19,7 @@ public class TSOExpert {
 	private static Realm defaultRealm;
 	private static Thread proxyThread;
 
-	private static void launchProxy() throws IOException {
+	public static void launchProxy() throws IOException {
 		GameHandler.addDataHandler(1001, new ZoneHandler());
 		GameHandler.addDataHandler(1014, new PlayerListHandler());
 
@@ -33,7 +33,7 @@ public class TSOExpert {
 		proxyThread.start();
 	}
 
-	private static void launchWindow() {
+	public static void launchWindow() {
 		defaultDisplay = new Display();
 		defaultRealm = SWTObservables.getRealm(defaultDisplay);
 
