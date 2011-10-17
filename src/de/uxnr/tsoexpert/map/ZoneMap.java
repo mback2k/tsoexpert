@@ -27,6 +27,15 @@ public class ZoneMap {
 	private static final Map<String, Sprite> landscapes = new HashMap<String, Sprite>();
 	private static final Map<String, Sprite> buildings = new HashMap<String, Sprite>();
 
+	private final double switchPaddingX = 0.5;
+	private final double switchPaddingY = 0.5;
+
+	private final int backgroundGridWidth;
+	private final int backgroundGridHeight;
+
+	private final int isoGridWidth;
+	private final int isoGridHeight;
+
 	private final Display display;
 	private final Document gfxDoc;
 	private final ZoneVO zoneVO;
@@ -39,9 +48,13 @@ public class ZoneMap {
 	private int maxOffsetY = 0;
 
 	public ZoneMap(ZoneVO zoneVO) {
+		this.zoneVO = zoneVO;
 		this.display = Display.getCurrent();
 		this.gfxDoc = XMLHandler.getDocument(GameSetting.gfx_settings);
-		this.zoneVO = zoneVO;
+		this.backgroundGridWidth = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@w").intValue();
+		this.backgroundGridHeight = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@h").intValue();
+		this.isoGridWidth = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
+		this.isoGridHeight = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
 	}
 
 	public void updateZoomFactor(int count) {
@@ -109,8 +122,8 @@ public class ZoneMap {
 	}
 
 	private void drawBackground(GC gc, Rectangle clip) {
-		int width = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@w").intValue();
-		int height = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@h").intValue();
+		int width = this.backgroundGridWidth;
+		int height = this.backgroundGridHeight;
 		int length = 34;
 
 		int index = 0;
@@ -171,8 +184,8 @@ public class ZoneMap {
 	}
 
 	private void drawLandscape(GC gc, Rectangle clip) {
-		int width = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
-		int height = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
+		int width = this.isoGridWidth;
+		int height = this.isoGridHeight / 2;
 		int length = 64;
 
 		for (LandscapeVO landscape : this.zoneVO.getLandscapes()) {
@@ -185,11 +198,15 @@ public class ZoneMap {
 				Rectangle src = sprite.getBounds();
 				Rectangle dst = sprite.getBounds();
 
-				dst.x = (int) (((index % length) * width) * this.zoomFactor);
+				double margin = (Math.floor(index / length) % 2) / 2;
+
+				dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
 				dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
 				dst.width = (int) (src.width * this.zoomFactor);
 				dst.height = (int) (src.height * this.zoomFactor);
 
+				dst.x -= dst.width * this.switchPaddingX;
+				dst.y -= dst.height * this.switchPaddingY;
 				dst.x -= this.offsetX;
 				dst.y -= this.offsetY;
 
@@ -203,8 +220,8 @@ public class ZoneMap {
 	}
 
 	private void drawBuildings(GC gc, Rectangle clip) {
-		int width = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
-		int height = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
+		int width = this.isoGridWidth;
+		int height = this.isoGridHeight / 2;
 		int length = 64;
 
 		for (BuildingVO building : this.zoneVO.getBuildings()) {
@@ -217,11 +234,15 @@ public class ZoneMap {
 				Rectangle src = sprite.getBounds();
 				Rectangle dst = sprite.getBounds();
 
-				dst.x = (int) (((index % length) * width) * this.zoomFactor);
+				double margin = (Math.floor(index / length) % 2) / 2;
+
+				dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
 				dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
 				dst.width = (int) (src.width * this.zoomFactor);
 				dst.height = (int) (src.height * this.zoomFactor);
 
+				dst.x -= dst.width * this.switchPaddingX;
+				dst.y -= dst.height * this.switchPaddingY;
 				dst.x -= this.offsetX;
 				dst.y -= this.offsetY;
 
@@ -259,12 +280,12 @@ public class ZoneMap {
 				if (file.exists() && file.isFile() && file.canRead()) {
 					try {
 						sprite = new Sprite(file);
-						cache.put(name, sprite);
 					} catch (IOException e) {
-						return null;
+						sprite = null;
 					}
 				}
 			}
+			cache.put(name, sprite);
 		}
 		return sprite;
 	}
