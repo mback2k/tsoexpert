@@ -13,7 +13,7 @@ import de.uxnr.tsoexpert.nlib.data.Indices;
 import de.uxnr.tsoexpert.nlib.data.Main;
 import de.uxnr.tsoexpert.nlib.data.SubtypeCalculated;
 
-public class SpritLibContainer {
+public class SpriteLibContainer {
 	public Main loadSpriteLibFromBinaryData(InputStream stream) throws IOException {
 		BinaryStream binarystream = new BinaryStream(stream);
 		Main main = new Main();
@@ -114,7 +114,7 @@ public class SpritLibContainer {
 		File file = new File("res/GFX/landscape_lib/water_twinkle_2.bin");
 		FileInputStream stream = new FileInputStream(file);
 
-		SpritLibContainer lib = new SpritLibContainer();
+		SpriteLibContainer lib = new SpriteLibContainer();
 		System.out.println(lib.loadSpriteLibFromBinaryData(stream));
 	}
 }
