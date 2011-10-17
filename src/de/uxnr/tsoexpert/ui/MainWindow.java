@@ -16,6 +16,16 @@ import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseWheelListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
@@ -32,11 +42,14 @@ import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.game.communication.vo.DepositVO;
 import de.uxnr.tsoexpert.game.communication.vo.ResourceVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+import de.uxnr.tsoexpert.map.ZoneMap;
 
-public class MainWindow extends ApplicationWindow {
+public class MainWindow extends ApplicationWindow implements PaintListener, MouseWheelListener, KeyListener, MouseListener, MouseMoveListener {
 	private final WritableList m_buildings = new WritableList(new Vector<BuildingVO>(), BuildingVO.class);
 	private final WritableList m_resources = new WritableList(new Vector<ResourceVO>(), ResourceVO.class);
 	private final WritableList m_deposits = new WritableList(new Vector<DepositVO>(), DepositVO.class);
+
+	private ZoneMap m_zonemap;
 
 	@SuppressWarnings("unused")
 	private DataBindingContext m_bindingContext;
@@ -64,6 +77,10 @@ public class MainWindow extends ApplicationWindow {
 	private TableColumn tblclmnDepositAmount;
 	private TableColumn tblclmnDepositCapacity;
 
+	private boolean t_drag;
+	private int t_lastX;
+	private int t_lastY;
+
 	/**
 	 * Create the application window.
 	 */
@@ -89,9 +106,15 @@ public class MainWindow extends ApplicationWindow {
 		this.tbtmMap = new TabItem(this.tabFolder, SWT.NONE);
 		this.tbtmMap.setText("Map");
 
-		this.canvasMap = new Canvas(this.tabFolder, SWT.NONE);
+		this.canvasMap = new Canvas(this.tabFolder, SWT.BORDER | SWT.NO_BACKGROUND);
+		this.canvasMap.addMouseMoveListener(this);
+		this.canvasMap.addMouseListener(this);
+		this.canvasMap.addKeyListener(this);
+		this.canvasMap.addMouseWheelListener(this);
+		this.canvasMap.addPaintListener(this);
 		this.tbtmMap.setControl(this.canvasMap);
 		this.canvasMap.setLayout(new FillLayout(SWT.HORIZONTAL));
+		this.canvasMap.getShell().setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_HAND));
 
 		this.tbtmBuildings = new TabItem(this.tabFolder, SWT.NONE);
 		this.tbtmBuildings.setText("Buildings");
@@ -252,6 +275,66 @@ public class MainWindow extends ApplicationWindow {
 
 		this.m_deposits.clear();
 		this.m_deposits.addAll(zoneVO.getDeposits());
+
+		this.m_zonemap = new ZoneMap(zoneVO);
+		this.canvasMap.redraw();
+	}
+
+	@Override
+	public void paintControl(PaintEvent e) {
+		if (this.m_zonemap != null) {
+			this.m_zonemap.draw(this.canvasMap, e.gc);
+
+		} else {
+			Color white = this.canvasMap.getDisplay().getSystemColor(SWT.COLOR_WHITE);
+
+			e.gc.setBackground(white);
+			e.gc.setForeground(white);
+			e.gc.fillRectangle(e.gc.getClipping());
+		}
+	}
+
+	@Override
+	public void mouseScrolled(MouseEvent e) {
+		if (this.m_zonemap != null) {
+			this.m_zonemap.updateZoomFactor(e.count);
+			this.canvasMap.redraw();
+		}
+	}
+
+	@Override
+	public void mouseDoubleClick(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseDown(MouseEvent e) {
+		this.t_drag = true;
+		this.t_lastX = e.x;
+		this.t_lastY = e.y;
+	}
+
+	@Override
+	public void mouseUp(MouseEvent e) {
+		this.t_drag = false;
+	}
+
+	@Override
+	public void mouseMove(MouseEvent e) {
+		if (this.t_drag && this.m_zonemap != null) {
+			this.m_zonemap.updateOffsetX(this.t_lastX - e.x);
+			this.m_zonemap.updateOffsetY(this.t_lastY - e.y);
+			this.t_lastX = e.x;
+			this.t_lastY = e.y;
+			this.canvasMap.redraw();
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
 	}
 
 	protected DataBindingContext initDataBindings() {
