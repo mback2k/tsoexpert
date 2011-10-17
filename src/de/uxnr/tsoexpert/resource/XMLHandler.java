@@ -18,13 +18,35 @@ public class XMLHandler implements IResourceHandler {
 
 	@Override
 	public void handleResource(File file) throws IOException {
+		XMLHandler.loadDocument(file);
+	}
+
+	protected static Document loadDocument(File file) throws IOException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
+			dbf.setNamespaceAware(true);
 
-			documents.put(file.getName(), db.parse(file));
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(file);
+
+			documents.put(file.getName(), doc);
+
+			return doc;
 		} catch (Exception e) {
 			throw new IOException(e);
+		}
+	}
+
+	public static Document getDocument(File file) {
+		String filename = file.getName();
+
+		if (documents.containsKey(filename))
+			return documents.get(filename);
+
+		try {
+			return loadDocument(file);
+		} catch (IOException e) {
+			return null;
 		}
 	}
 
@@ -33,12 +55,7 @@ public class XMLHandler implements IResourceHandler {
 	}
 
 	public static void main(String[] args) throws IOException {
-		File file = new File("res/GFX/gfx_settings.xml");
-
-		XMLHandler xh = new XMLHandler();
-		xh.handleResource(file);
-
-		NodeList nodes = documents.get("gfx_settings.xml").getElementsByTagName("Building");
+		NodeList nodes = getDocument(GameSetting.gfx_settings).getElementsByTagName("Building");
 
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
