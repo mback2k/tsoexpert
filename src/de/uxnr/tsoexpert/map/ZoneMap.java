@@ -361,7 +361,7 @@ public class ZoneMap {
 
 			int x = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
 			int y = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
-			int w= (int) (width * this.zoomFactor);
+			int w = (int) (width * this.zoomFactor);
 			int h = (int) (height * this.zoomFactor);
 
 			switch (mapValueItemVO.getBackgroundBlocking()) {
