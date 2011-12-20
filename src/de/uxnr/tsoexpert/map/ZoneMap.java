@@ -3,6 +3,7 @@ package de.uxnr.tsoexpert.map;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -32,7 +33,6 @@ public class ZoneMap {
 	private static final Map<String, Sprite> buildings = new HashMap<String, Sprite>();
 
 	private static final Map<String, Double> nofUpgrades = new HashMap<String, Double>();
-	private static final Map<Integer, int[]> grid = new HashMap<Integer, int[]>();
 
 	private final int backgroundGridWidth;
 	private final int backgroundGridHeight;
@@ -149,7 +149,10 @@ public class ZoneMap {
 			height = area.height;
 		}
 		if (this.doubleBuffer == null || size.x != width || size.y != height) {
-			this.doubleBuffer = new Image(this.display, size.x, size.y);
+			if (this.doubleBuffer != null) {
+				this.doubleBuffer.dispose();
+			}
+			this.doubleBuffer = new Image(gc.getDevice(), size.x, size.y);
 		}
 
 		GC imageGC = new GC(this.doubleBuffer);
@@ -337,11 +340,42 @@ public class ZoneMap {
 						gc.drawRectangle(dst);
 						gc.drawText("B: "+name, dst.x, dst.y);
 					}
+
+					for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
+						int house = resourceCreation.getResourceCreationHouseGrid();
+						if (house == index) {
+							PathVO path = resourceCreation.getPathVO();
+							if (path == null)
+								continue;
+							
+							List<de.uxnr.amf.v3.type.Integer> list = path.getPath();
+							if (list == null)
+								continue;
+							
+							int length1 = list.size() * 10000;
+							int length2 = length1 * 2;
+
+							int mWayWarehouseToWorkyard = 0;
+							int mWayWorkyardToDeposit = (length1 / 5) / 100;
+							int mProductionTime = 0;
+							int mOverallTime = 0;
+							
+							gc.drawText("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
+						}
+					}
+					
+					dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
+					dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+					dst.width = 4;
+					dst.height = 4;
+					
+					dst.x -= this.offsetX + 2;
+					dst.y -= this.offsetY + 2;
+					
+					if (clip.intersects(dst)) {
+						gc.drawRectangle(dst);
+					}
 				}
-
-				grid.put(index, new int[] { dst.x + (dst.width / 2), dst.y + (dst.height / 2) });
-
-				index++;
 			}
 		}
 	}
@@ -351,6 +385,7 @@ public class ZoneMap {
 		int height = this.isoGridHeight / 2;
 		int length = 62;
 
+		Color foreground = gc.getForeground();
 		Color red = this.display.getSystemColor(SWT.COLOR_RED);
 		Color blue = this.display.getSystemColor(SWT.COLOR_BLUE);
 		Color green = this.display.getSystemColor(SWT.COLOR_GREEN);
@@ -385,6 +420,8 @@ public class ZoneMap {
 
 			index++;
 		}
+
+		gc.setForeground(foreground);
 	}
 
 	private void drawResourceCreations(GC gc, Rectangle clip) {
@@ -392,11 +429,12 @@ public class ZoneMap {
 		int height = this.isoGridHeight / 2;
 		int length = 64;
 
+		Color foreground = gc.getForeground();
 		Color red = this.display.getSystemColor(SWT.COLOR_RED);
 		Color blue = this.display.getSystemColor(SWT.COLOR_BLUE);
 
-		for (ResourceCreationVO resourceCreationVO : this.zoneVO.getResourceCreations()) {
-			int index = resourceCreationVO.getResourceCreationHouseGrid();
+		for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
+			int index = resourceCreation.getResourceCreationHouseGrid();
 
 			double margin = (Math.floor(index / length) % 2) / 2;
 			int startX = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
@@ -404,34 +442,26 @@ public class ZoneMap {
 			int endX = startX;
 			int endY = startY;
 
-			if (grid.containsKey(index)) {
-				startX = endX = grid.get(index)[0];
-				startY = endY = grid.get(index)[1];
-			}
+			PathVO path = resourceCreation.getPathVO();
+			if (path != null) {
+				gc.setForeground(red);
 
-			gc.setForeground(red);
-
-			PathVO pathVO = resourceCreationVO.getPathVO();
-			if (pathVO != null) {
-				for (de.uxnr.amf.v3.type.Integer path : pathVO.getPath()) {
-					index = path.get();
+				for (de.uxnr.amf.v3.type.Integer streetGrid : path.getPath()) {
+					index = streetGrid.get();
 
 					endX = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
 					endY = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
 
-					if (grid.containsKey(index)) {
-						startX = endX = grid.get(index)[0];
-						startY = endY = grid.get(index)[1];
-					}
-
-					gc.drawLine(startX, startY, endX, endY);
 					gc.setForeground(blue);
+					gc.drawLine(startX, startY, endX, endY);
 
 					startX = endX;
 					startY = endY;
 				}
 			}
 		}
+
+		gc.setForeground(foreground);
 	}
 
 	private Sprite getBackground(String name) {
