@@ -28,30 +28,13 @@ public class StaticHandler implements HostHandler {
 	public static final String RESOURCE_PATH = "res/";
 	public static final String PRIVATE_KEY_FILE = "PRIVATE_KEY";
 	
-	private static final Map<String, IResourceHandler> resourceHandlers = new HashMap<String, IResourceHandler>();
-	
-	private String path = null;
-	
-	private int prefix = 0;
-	
-	private boolean decryptFile = false;
+	private final Map<String, IResourceHandler> resourceHandlers = new HashMap<String, IResourceHandler>();
 	
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
 			Headers requestHeaders, InputStream body)
 			throws IOException {
-		
-		this.path = requestURI.getPath();
-		
-		this.prefix = this.path.indexOf(RESOURCE_PREFIX);
-		
-		if (this.prefix > 0) {
-			this.prefix += RESOURCE_PREFIX.length();
-			
-			this.path = this.path.substring(this.prefix);
-			
-			this.decryptFile = this.path.endsWith("_enc");
-		}
+		// Nothing to do here
 	}
 
 	@Override
@@ -59,13 +42,22 @@ public class StaticHandler implements HostHandler {
 			Headers requestHeaders,
 			Headers responseHeaders, InputStream body)
 			throws IOException {
-		
-		if (this.prefix > 0 && body.available() > 0)
-			this.handleResource(this.saveResource(body));
+
+		String path = requestURI.getPath();
+		int prefix = path.indexOf(RESOURCE_PREFIX);
+
+		if (prefix > 0) {
+			prefix += RESOURCE_PREFIX.length();
+			path = path.substring(prefix);
+		}
+
+		if (body.available() > 0) {
+			this.handleResource(this.saveResource(path, body, path.endsWith("_enc")));
+		}
 	}
 	
-	private File saveResource(InputStream body) throws IOException {
-		File file = new File(RESOURCE_PATH + this.path);
+	private File saveResource(String path, InputStream body, boolean decrypt) throws IOException {
+		File file = new File(RESOURCE_PATH + path);
 		file.getParentFile().mkdirs();
 		
 		FileOutputStream output = new FileOutputStream(file);
@@ -77,7 +69,7 @@ public class StaticHandler implements HostHandler {
 		}
 		output.close();
 		
-		if (this.decryptFile)
+		if (decrypt)
 			file = this.decryptFile(file);
 		
 		return file;
@@ -133,33 +125,33 @@ public class StaticHandler implements HostHandler {
 		
 		return decrypted;
 	}
-	
-	public void handleResource(File file) throws IOException {
+
+	public synchronized void handleResource(File file) throws IOException {
 		String path = file.getPath();
-		
-		for (Entry<String, IResourceHandler> handler : resourceHandlers.entrySet()) {
+
+		for (Entry<String, IResourceHandler> handler : this.resourceHandlers.entrySet()) {
 			if (path.matches(handler.getKey())) {
 				try {
-					handler.getValue().getClass().newInstance().handleResource(file);
+					handler.getValue().handleResource(file);
 				} catch (Exception e) {
 					throw new IOException(e);
 				}
 			}
 		}
 	}
-	
-	public static void addResourceHandler(String path, IResourceHandler resourceHandler) {
-		resourceHandlers.put(path, resourceHandler);
+
+	public synchronized void addResourceHandler(String path, IResourceHandler resourceHandler) {
+		this.resourceHandlers.put(path, resourceHandler);
 	}
-	
-	public static void removeResourceHandler(String path) {
-		resourceHandlers.remove(path);
+
+	public synchronized void removeResourceHandler(String path) {
+		this.resourceHandlers.remove(path);
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		File file = new File("res/GFX/game_settings.xml_enc");
 		
-		StaticHandler sh = new StaticHandler();
-		file = sh.decryptFile(file);
+		StaticHandler staticHandler = new StaticHandler();
+		file = staticHandler.decryptFile(file);
 	}
 }

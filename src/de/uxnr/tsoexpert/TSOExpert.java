@@ -10,15 +10,22 @@ import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
 public class TSOExpert {
+	private static GameHandler gameHandler;
+	private static StaticHandler staticHandler;
+
+	private static Proxy proxy;
+
 	public static void main(String[] args) throws IOException {
-		GameHandler.addDataHandler(1001, new ZoneHandler());
-		GameHandler.addDataHandler(1014, new PlayerListHandler());
+		gameHandler = new GameHandler();
+		gameHandler.addDataHandler(1001, new ZoneHandler());
+		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
-		StaticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
+		staticHandler = new StaticHandler();
+		staticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
 
-		Proxy proxy = new Proxy(8000);
-		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", new GameHandler());
-		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", new StaticHandler());
-		proxy.run();
+		proxy = new Proxy(8000);
+		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", gameHandler);
+		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", staticHandler);
+		proxy.start();
 	}
 }

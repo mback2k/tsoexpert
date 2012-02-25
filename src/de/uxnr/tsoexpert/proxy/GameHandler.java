@@ -35,7 +35,8 @@ public class GameHandler implements HostHandler {
 		Communication.register();
 	}
 
-	private static final Map<Integer, IDataHandler<? extends AMF_Type>> dataHandlers = new HashMap<Integer, IDataHandler<? extends AMF_Type>>();
+	@SuppressWarnings("rawtypes")
+	private final Map<Integer, IDataHandler> dataHandlers = new HashMap<Integer, IDataHandler>();
 
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
@@ -152,14 +153,14 @@ public class GameHandler implements HostHandler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void parseServerActionResult(Integer type, ServerActionResult serverActionResult) throws IOException {
-		AMF3_Type value = serverActionResult.getData();
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private synchronized void parseServerActionResult(Integer type, ServerActionResult serverActionResult) throws IOException {
+		AMF_Type value = serverActionResult.getData();
 
-		for (Entry<Integer, IDataHandler<? extends AMF_Type>> handler : dataHandlers.entrySet()) {
+		for (Entry<Integer, IDataHandler> handler : this.dataHandlers.entrySet()) {
 			if (type.equals(handler.getKey())) {
 				try {
-					handler.getValue().getClass().newInstance().handleData(value);
+					handler.getValue().handleData(value);
 				} catch (Exception e) {
 					throw new IOException(e);
 				}
@@ -167,27 +168,23 @@ public class GameHandler implements HostHandler {
 		}
 	}
 
-	public static void addDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
-		dataHandlers.put(type, dataHandler);
+	public synchronized void addDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
+		this.dataHandlers.put(type, dataHandler);
 	}
 
-	public static void removeDataHandler(Integer type) {
-		dataHandlers.remove(type);
+	public synchronized void removeDataHandler(Integer type) {
+		this.dataHandlers.remove(type);
 	}
 
 	public static void main(String[] args) throws IOException {
-		GameHandler.addDataHandler(1001, new ZoneHandler());
-		GameHandler.addDataHandler(1014, new PlayerListHandler());
+		GameHandler gameHandler = new GameHandler();
+		gameHandler.addDataHandler(1001, new ZoneHandler());
+		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
-		GameHandler gh = new GameHandler();
 		InputStream stream = new FileInputStream(new File("2.amf"));
-
 		long start = System.currentTimeMillis();
-
-		gh.parseAMF(stream);
-
+		gameHandler.parseAMF(stream);
 		long stop = System.currentTimeMillis();
-
 		stream.close();
 
 		System.out.println("parseAMF: " + (stop-start) + "ms");
