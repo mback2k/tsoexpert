@@ -18,6 +18,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.spec.SecretKeySpec;
 
 import sun.misc.BASE64Decoder;
+import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
 import de.uxnr.tsoexpert.resource.IResourceHandler;
 
@@ -37,7 +38,7 @@ public class StaticHandler implements HostHandler {
 	
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
-			Map<String, String> requestHeaders, InputStream body)
+			Headers requestHeaders, InputStream body)
 			throws IOException {
 		
 		this.path = requestURI.getPath();
@@ -55,8 +56,8 @@ public class StaticHandler implements HostHandler {
 
 	@Override
 	public void handleResponse(String requestMethod, URI requestURI,
-			Map<String, String> requestHeaders,
-			Map<String, String> responseHeaders, InputStream body)
+			Headers requestHeaders,
+			Headers responseHeaders, InputStream body)
 			throws IOException {
 		
 		if (this.prefix > 0 && body.available() > 0)
