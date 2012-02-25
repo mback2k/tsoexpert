@@ -1,8 +1,8 @@
 package de.uxnr.tsoexpert.nlib.data;
 
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 public class FrameCalculated {
 	public Point calculatePoint;
@@ -13,9 +13,9 @@ public class FrameCalculated {
 	public double frameOffsY;
 	public double frameOffsYScaled;
 	public double frameOffsYScaledCache;
-	public ImageData orginalBitmap;
+	public Image orginalBitmap;
 	public boolean scaled;
-	public ImageData scaledBitmap;
+	public Image scaledBitmap;
 	public Rectangle scaledBitmapRectangle;
 	public int size_u;
 	public int size_v;
