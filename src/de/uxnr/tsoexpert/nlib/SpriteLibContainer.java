@@ -1,12 +1,11 @@
 package de.uxnr.tsoexpert.nlib;
 
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 
 import de.uxnr.tsoexpert.nlib.data.FrameCalculated;
 import de.uxnr.tsoexpert.nlib.data.Indices;

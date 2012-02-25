@@ -20,6 +20,7 @@ import de.uxnr.amf.v0.type.StrictArray;
 import de.uxnr.amf.v3.AMF3_Type;
 import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
+import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
 import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
@@ -38,9 +39,9 @@ public class GameHandler implements HostHandler {
 
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
-			Map<String, String> requestHeaders, InputStream body) throws IOException {
+			Headers requestHeaders, InputStream body) throws IOException {
 
-		String contentType = requestHeaders.get("content-type");
+		String contentType = requestHeaders.getFirst("content-type");
 		if (contentType != null) {
 			if (contentType.equalsIgnoreCase("application/x-amf")) {
 				this.parseAMF(body);
@@ -50,10 +51,10 @@ public class GameHandler implements HostHandler {
 
 	@Override
 	public void handleResponse(String requestMethod, URI requestURI,
-			Map<String, String> requestHeaders,
-			Map<String, String> responseHeaders, InputStream body) throws IOException {
+			Headers requestHeaders,
+			Headers responseHeaders, InputStream body) throws IOException {
 
-		String contentType = responseHeaders.get("content-type");
+		String contentType = responseHeaders.getFirst("content-type");
 		if (contentType != null) {
 			if (contentType.equalsIgnoreCase("application/x-amf")) {
 				this.parseAMF(body);
