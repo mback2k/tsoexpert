@@ -14,17 +14,25 @@ import de.uxnr.tsoexpert.ui.MainWindow;
 import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 
 public class TSOExpert {
+	private static GameHandler gameHandler;
+	private static StaticHandler staticHandler;
+
+	private static Proxy proxy;
 	private static Thread proxyThread;
 
+	private static MainWindow window;
+
 	public static void launchProxy() throws IOException {
-		GameHandler.addDataHandler(1001, new ZoneHandler());
-		GameHandler.addDataHandler(1014, new PlayerListHandler());
+		gameHandler = new GameHandler();
+		gameHandler.addDataHandler(1001, new ZoneHandler());
+		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
-		StaticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
+		staticHandler = new StaticHandler();
+		staticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
 
-		Proxy proxy = new Proxy(8000);
-		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", new GameHandler());
-		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", new StaticHandler());
+		proxy = new Proxy(8000);
+		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", gameHandler);
+		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", staticHandler);
 
 		proxyThread = new Thread(proxy);
 		proxyThread.start();
@@ -35,7 +43,11 @@ public class TSOExpert {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					MainWindow window = new MainWindow();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					window = new MainWindow();
 					window.show();
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -84,13 +84,13 @@ public class MainWindow implements PropertyChangeListener {
 			@Override
 			public void run() {
 				try {
-					GameHandler.addDataHandler(1001, new ZoneHandler());
-					GameHandler.addDataHandler(1014, new PlayerListHandler());
+					GameHandler gameHandler = new GameHandler();
+					gameHandler.addDataHandler(1001, new ZoneHandler());
+					gameHandler.addDataHandler(1014, new PlayerListHandler());
 
-					GameHandler gh = new GameHandler();
 					InputStream stream = new FileInputStream(new File("2.amf"));
 
-					gh.parseAMF(stream);
+					gameHandler.parseAMF(stream);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
