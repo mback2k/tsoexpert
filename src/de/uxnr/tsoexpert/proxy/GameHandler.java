@@ -114,12 +114,15 @@ public class GameHandler implements HostHandler {
 
 		if (value instanceof ServerResponse) {
 			this.parseServerResponse((ServerResponse) value);
+
+		} else {
+			System.err.println(value.toString());
 		}
 	}
 
 	private void parseCommandMessage(CommandMessage commandMessage) throws IOException {
-		//	System.out.println("CommandMessage:");
-		//	System.out.println(commandMessage.getOperation());
+//		System.out.println("CommandMessage:");
+//		System.out.println(commandMessage.getOperation());
 	}
 
 	private void parseRemotingMessage(RemotingMessage remotingMessage) throws IOException {
@@ -127,6 +130,9 @@ public class GameHandler implements HostHandler {
 
 		if (value instanceof Array) {
 			this.parseArray((Array) value);
+
+		} else {
+			System.err.println(value.toString());
 		}
 	}
 
@@ -134,19 +140,25 @@ public class GameHandler implements HostHandler {
 		for (AMF3_Type value : array.values()) {
 			if (value instanceof ServerCall) {
 				this.parseServerCall((ServerCall) value);
+
+			} else {
+				System.err.println(value.toString());
 			}
 		}
 	}
 
 	private void parseServerCall(ServerCall serverCall) {
-		//	System.out.println("ServerCall:");
-		//	System.out.println(serverCall.getType());
-		//	System.out.println(serverCall.getZoneID());
+//		System.out.println("ServerCall:");
+//		System.out.println(serverCall.getType());
+//		System.out.println(serverCall.getZoneID());
 	}
 
 	private void parseServerResponse(ServerResponse serverResponse) throws IOException {
 		Integer type = serverResponse.getType();
 		AMF3_Type value = serverResponse.getData();
+
+//		System.out.println("ServerResponse:");
+//		System.out.println(type);
 
 		if (value instanceof ServerActionResult) {
 			this.parseServerActionResult(type, (ServerActionResult) value);
