@@ -1,12 +1,12 @@
 package de.uxnr.tsoexpert.map;
 
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
+import javax.imageio.ImageIO;
 
 import de.uxnr.tsoexpert.nlib.SpriteLibContainer;
 import de.uxnr.tsoexpert.nlib.data.FrameCalculated;
@@ -27,7 +27,7 @@ public class Sprite {
 		FileInputStream stream = new FileInputStream(filename);
 
 		this.main = spriteLibContainer.loadSpriteLibFromBinaryData(stream);
-		this.image = new Image(Display.getCurrent(), file.getAbsolutePath());
+		this.image = ImageIO.read(file);
 
 		this.rescale();
 	}
@@ -96,7 +96,7 @@ public class Sprite {
 			}
 		}
 		if (this.bounds == null) {
-			this.bounds = this.image.getBounds();
+			this.bounds = this.image.getGraphics().getClipBounds();
 		}
 		return new Rectangle(this.bounds.x, this.bounds.y, this.bounds.width, this.bounds.height);
 	}

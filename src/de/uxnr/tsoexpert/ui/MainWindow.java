@@ -491,7 +491,7 @@ public class MainWindow extends ApplicationWindow implements PaintListener, Mous
 	@Override
 	public void paintControl(PaintEvent e) {
 		if (this.m_zonemap != null) {
-			this.m_zonemap.draw(this.canvasMap, e.gc);
+		//	this.m_zonemap.draw(this.canvasMap, e.gc);
 
 		} else {
 			Color white = this.canvasMap.getDisplay().getSystemColor(SWT.COLOR_WHITE);

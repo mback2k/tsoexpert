@@ -1,19 +1,18 @@
 package de.uxnr.tsoexpert.map;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Display;
 import org.w3c.dom.Document;
 
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
@@ -40,11 +39,10 @@ public class ZoneMap {
 	private final int isoGridWidth;
 	private final int isoGridHeight;
 
-	private final Display display;
 	private final Document gfxDoc;
 	private final ZoneVO zoneVO;
 
-	private Image doubleBuffer = null;
+	private BufferedImage doubleBuffer = null;
 	private double zoomFactor = 1;
 	private int offsetX = 0;
 	private int offsetY = 0;
@@ -66,7 +64,6 @@ public class ZoneMap {
 
 	public ZoneMap(ZoneVO zoneVO) {
 		this.zoneVO = zoneVO;
-		this.display = Display.getCurrent();
 		this.gfxDoc = XMLHandler.getDocument(GameSetting.gfx_settings);
 		this.backgroundGridWidth = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@w").intValue();
 		this.backgroundGridHeight = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@h").intValue();
@@ -138,32 +135,26 @@ public class ZoneMap {
 		this.debugMapValues = debugMapValues;
 	}
 
-	public void draw(Canvas canvas, GC gc) {
-		Point size = canvas.getSize();
+	public void draw(Point size, Graphics2D g) {
 		int width = 0;
 		int height = 0;
 
 		if (this.doubleBuffer != null) {
-			Rectangle area = this.doubleBuffer.getBounds();
-			width = area.width;
-			height = area.height;
+			width = this.doubleBuffer.getWidth(null);
+			height = this.doubleBuffer.getHeight(null);
 		}
 		if (this.doubleBuffer == null || size.x != width || size.y != height) {
-			if (this.doubleBuffer != null) {
-				this.doubleBuffer.dispose();
-			}
-			this.doubleBuffer = new Image(gc.getDevice(), size.x, size.y);
+			this.doubleBuffer = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_RGB);
 		}
 
-		GC imageGC = new GC(this.doubleBuffer);
-		imageGC.setAntialias(SWT.OFF);
-		imageGC.setInterpolation(SWT.LOW);
-		imageGC.setBackground(gc.getBackground());
-		imageGC.setForeground(gc.getForeground());
-		imageGC.setFont(gc.getFont());
-		imageGC.fillRectangle(0, 0, size.x, size.y);
+		Graphics2D gb = this.doubleBuffer.createGraphics();
+		gb.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		gb.setBackground(g.getBackground());
+		gb.setColor(g.getColor());
+		gb.setFont(g.getFont());
+		gb.fillRect(0, 0, size.x, size.y);
 
-		Rectangle clip = gc.getClipping();
+		Rectangle clip = g.getClipBounds();
 
 		this.minOffsetX = 0;
 		this.minOffsetY = 0;
@@ -171,22 +162,22 @@ public class ZoneMap {
 		this.maxOffsetY = 0;
 
 		if (this.showBackground || this.debugBackground) {
-			this.drawBackground(imageGC, clip);
+			this.drawBackground(gb, clip);
 		}
 		if (this.showFreeLandscape || this.debugFreeLandscape) {
-			this.drawFreeLandscape(imageGC, clip);
+			this.drawFreeLandscape(gb, clip);
 		}
 		if (this.showLandscape || this.debugLandscape) {
-			this.drawLandscape(imageGC, clip);
+			this.drawLandscape(gb, clip);
 		}
 		if (this.showBuilding || this.debugBuilding) {
-			this.drawBuildings(imageGC, clip);
+			this.drawBuildings(gb, clip);
 		}
 		if (this.debugResourceCreations) {
-			this.drawResourceCreations(imageGC, clip);
+			this.drawResourceCreations(gb, clip);
 		}
 		if (this.debugMapValues) {
-			this.drawMapValues(imageGC, clip);
+			this.drawMapValues(gb, clip);
 		}
 
 		this.offsetX = Math.max(this.offsetX, this.minOffsetX);
@@ -194,12 +185,12 @@ public class ZoneMap {
 		this.offsetX = Math.min(this.offsetX, this.maxOffsetX);
 		this.offsetY = Math.min(this.offsetY, this.maxOffsetY);
 
-		gc.drawImage(this.doubleBuffer, 0, 0);
+		g.drawImage(this.doubleBuffer, 0, 0, null);
 
-		imageGC.dispose();
+		gb.dispose();
 	}
 
-	private void drawBackground(GC gc, Rectangle clip) {
+	private void drawBackground(Graphics2D g, Rectangle clip) {
 		int width = this.backgroundGridWidth;
 		int height = this.backgroundGridHeight;
 		int length = 34;
@@ -228,11 +219,11 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height);
+					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
 
 					if (this.debugBackground) {
-						gc.drawRectangle(dst);
-						gc.drawText("BG: "+name, dst.x, dst.y);
+						g.draw(dst);
+						g.drawString("BG: "+name, dst.x, dst.y);
 					}
 				}
 
@@ -241,7 +232,7 @@ public class ZoneMap {
 		}
 	}
 
-	private void drawFreeLandscape(GC gc, Rectangle clip) {
+	private void drawFreeLandscape(Graphics2D g, Rectangle clip) {
 		for (FreeLandscapeVO freeLandscape : this.zoneVO.getFreeLandscapes()) {
 			String name = freeLandscape.getName_string();
 			Sprite sprite = this.getLandscape(name);
@@ -260,18 +251,18 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height);
+					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
 
 					if (this.debugFreeLandscape) {
-						gc.drawRectangle(dst);
-						gc.drawText("FL: "+name, dst.x, dst.y);
+						g.draw(dst);
+						g.drawString("FL: "+name, dst.x, dst.y);
 					}
 				}
 			}
 		}
 	}
 
-	private void drawLandscape(GC gc, Rectangle clip) {
+	private void drawLandscape(Graphics2D g, Rectangle clip) {
 		int width = this.isoGridWidth;
 		int height = this.isoGridHeight / 2;
 		int length = 64;
@@ -297,18 +288,18 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height);
+					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
 
 					if (this.debugLandscape) {
-						gc.drawRectangle(dst);
-						gc.drawText("L: "+name, dst.x, dst.y);
+						g.draw(dst);
+						g.drawString("L: "+name, dst.x, dst.y);
 					}
 				}
 			}
 		}
 	}
 
-	private void drawBuildings(GC gc, Rectangle clip) {
+	private void drawBuildings(Graphics2D gc, Rectangle clip) {
 		int width = this.isoGridWidth;
 		int height = this.isoGridHeight / 2;
 		int length = 64;
@@ -334,11 +325,11 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height);
+					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
 
 					if (this.debugBuilding) {
-						gc.drawRectangle(dst);
-						gc.drawText("B: "+name, dst.x, dst.y);
+						gc.draw(dst);
+						gc.drawString("B: "+name, dst.x, dst.y);
 					}
 
 					for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
@@ -360,7 +351,7 @@ public class ZoneMap {
 							int mProductionTime = 0;
 							int mOverallTime = 0;
 							
-							gc.drawText("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
+							gc.drawString("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
 						}
 					}
 					
@@ -373,22 +364,19 @@ public class ZoneMap {
 					dst.y -= this.offsetY + 2;
 					
 					if (clip.intersects(dst)) {
-						gc.drawRectangle(dst);
+						gc.draw(dst);
 					}
 				}
 			}
 		}
 	}
 
-	private void drawMapValues(GC gc, Rectangle clip) {
+	private void drawMapValues(Graphics2D g, Rectangle clip) {
 		int width = this.isoGridWidth;
 		int height = this.isoGridHeight / 2;
 		int length = 62;
 
-		Color foreground = gc.getForeground();
-		Color red = this.display.getSystemColor(SWT.COLOR_RED);
-		Color blue = this.display.getSystemColor(SWT.COLOR_BLUE);
-		Color green = this.display.getSystemColor(SWT.COLOR_GREEN);
+		Color foreground = g.getColor();
 
 		int index = 0;
 		for (MapValueItemVO mapValueItemVO : this.zoneVO.getMapValues()) {
@@ -401,37 +389,35 @@ public class ZoneMap {
 
 			switch (mapValueItemVO.getBackgroundBlocking()) {
 				case 0: // BLOCK_TYPE_ALLOW_ALL
-					gc.setForeground(green);
+					g.setColor(Color.GREEN);
 					break;
 				case 1: // BLOCK_TYPE_ALLOW_NOTHING
-					gc.setForeground(red);
+					g.setColor(Color.RED);
 					break;
 				case 2: // BLOCK_TYPE_ALLOW_STREETS
-					gc.setForeground(blue);
+					g.setColor(Color.BLUE);
 					break;
 			}
 
 			Rectangle dst = new Rectangle(x, y, w, h);
 
 			if (clip.intersects(dst)) {
-				gc.drawRectangle(dst);
-				gc.drawText("S: "+mapValueItemVO.getSectorId(), dst.x, dst.y);
+				g.draw(dst);
+				g.drawString("S: "+mapValueItemVO.getSectorId(), dst.x, dst.y);
 			}
 
 			index++;
 		}
 
-		gc.setForeground(foreground);
+		g.setColor(foreground);
 	}
 
-	private void drawResourceCreations(GC gc, Rectangle clip) {
+	private void drawResourceCreations(Graphics2D g, Rectangle clip) {
 		int width = this.isoGridWidth;
 		int height = this.isoGridHeight / 2;
 		int length = 64;
 
-		Color foreground = gc.getForeground();
-		Color red = this.display.getSystemColor(SWT.COLOR_RED);
-		Color blue = this.display.getSystemColor(SWT.COLOR_BLUE);
+		Color foreground = g.getColor();
 
 		for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
 			int index = resourceCreation.getResourceCreationHouseGrid();
@@ -444,7 +430,7 @@ public class ZoneMap {
 
 			PathVO path = resourceCreation.getPathVO();
 			if (path != null) {
-				gc.setForeground(red);
+				g.setColor(Color.RED);
 
 				for (de.uxnr.amf.v3.type.Integer streetGrid : path.getPath()) {
 					index = streetGrid.get();
@@ -452,8 +438,8 @@ public class ZoneMap {
 					endX = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
 					endY = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
 
-					gc.setForeground(blue);
-					gc.drawLine(startX, startY, endX, endY);
+					g.setColor(Color.BLUE);
+					g.drawLine(startX, startY, endX, endY);
 
 					startX = endX;
 					startY = endY;
@@ -461,7 +447,7 @@ public class ZoneMap {
 			}
 		}
 
-		gc.setForeground(foreground);
+		g.setColor(foreground);
 	}
 
 	private Sprite getBackground(String name) {
