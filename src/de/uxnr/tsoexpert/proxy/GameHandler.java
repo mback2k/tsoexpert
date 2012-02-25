@@ -24,11 +24,11 @@ import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
 import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
-import de.uxnr.tsoexpert.game.ZoneHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
 import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
 import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
 import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
+import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 
 public class GameHandler implements HostHandler {
 	static {

@@ -1,9 +1,9 @@
 package de.uxnr.tsoexpert.map;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -135,7 +135,7 @@ public class ZoneMap {
 		this.debugMapValues = debugMapValues;
 	}
 
-	public void draw(Point size, Graphics2D g) {
+	public void draw(Dimension size, Graphics2D graphics) {
 		int width = 0;
 		int height = 0;
 
@@ -143,18 +143,18 @@ public class ZoneMap {
 			width = this.doubleBuffer.getWidth(null);
 			height = this.doubleBuffer.getHeight(null);
 		}
-		if (this.doubleBuffer == null || size.x != width || size.y != height) {
-			this.doubleBuffer = new BufferedImage(size.x, size.y, BufferedImage.TYPE_INT_RGB);
+		if (this.doubleBuffer == null || size.width != width || size.height != height) {
+			this.doubleBuffer = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		}
 
-		Graphics2D gb = this.doubleBuffer.createGraphics();
-		gb.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		gb.setBackground(g.getBackground());
-		gb.setColor(g.getColor());
-		gb.setFont(g.getFont());
-		gb.fillRect(0, 0, size.x, size.y);
+		Graphics2D g = this.doubleBuffer.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g.setBackground(graphics.getBackground());
+		g.setColor(graphics.getColor());
+		g.setFont(graphics.getFont());
+		g.fillRect(0, 0, size.width, size.height);
 
-		Rectangle clip = g.getClipBounds();
+		Rectangle clip = new Rectangle(size);
 
 		this.minOffsetX = 0;
 		this.minOffsetY = 0;
@@ -162,22 +162,22 @@ public class ZoneMap {
 		this.maxOffsetY = 0;
 
 		if (this.showBackground || this.debugBackground) {
-			this.drawBackground(gb, clip);
+			this.drawBackground(g, clip);
 		}
 		if (this.showFreeLandscape || this.debugFreeLandscape) {
-			this.drawFreeLandscape(gb, clip);
+			this.drawFreeLandscape(g, clip);
 		}
 		if (this.showLandscape || this.debugLandscape) {
-			this.drawLandscape(gb, clip);
+			this.drawLandscape(g, clip);
 		}
 		if (this.showBuilding || this.debugBuilding) {
-			this.drawBuildings(gb, clip);
+			this.drawBuildings(g, clip);
 		}
 		if (this.debugResourceCreations) {
-			this.drawResourceCreations(gb, clip);
+			this.drawResourceCreations(g, clip);
 		}
 		if (this.debugMapValues) {
-			this.drawMapValues(gb, clip);
+			this.drawMapValues(g, clip);
 		}
 
 		this.offsetX = Math.max(this.offsetX, this.minOffsetX);
@@ -185,9 +185,9 @@ public class ZoneMap {
 		this.offsetX = Math.min(this.offsetX, this.maxOffsetX);
 		this.offsetY = Math.min(this.offsetY, this.maxOffsetY);
 
-		g.drawImage(this.doubleBuffer, 0, 0, null);
+		graphics.drawImage(this.doubleBuffer, 0, 0, null);
 
-		gb.dispose();
+		g.dispose();
 	}
 
 	private void drawBackground(Graphics2D g, Rectangle clip) {
@@ -219,7 +219,7 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
+					this.drawImage(g, image, dst, src);
 
 					if (this.debugBackground) {
 						g.draw(dst);
@@ -251,7 +251,7 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
+					this.drawImage(g, image, dst, src);
 
 					if (this.debugFreeLandscape) {
 						g.draw(dst);
@@ -288,7 +288,7 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					g.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
+					this.drawImage(g, image, dst, src);
 
 					if (this.debugLandscape) {
 						g.draw(dst);
@@ -299,7 +299,7 @@ public class ZoneMap {
 		}
 	}
 
-	private void drawBuildings(Graphics2D gc, Rectangle clip) {
+	private void drawBuildings(Graphics2D g, Rectangle clip) {
 		int width = this.isoGridWidth;
 		int height = this.isoGridHeight / 2;
 		int length = 64;
@@ -325,11 +325,11 @@ public class ZoneMap {
 				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
-					gc.drawImage(image, src.x, src.y, src.width, src.height, dst.x, dst.y, dst.width, dst.height, null);
+					this.drawImage(g, image, dst, src);
 
 					if (this.debugBuilding) {
-						gc.draw(dst);
-						gc.drawString("B: "+name, dst.x, dst.y);
+						g.draw(dst);
+						g.drawString("B: "+name, dst.x, dst.y);
 					}
 
 					for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
@@ -344,14 +344,14 @@ public class ZoneMap {
 								continue;
 							
 							int length1 = list.size() * 10000;
-							int length2 = length1 * 2;
+//							int length2 = length1 * 2;
 
-							int mWayWarehouseToWorkyard = 0;
+//							int mWayWarehouseToWorkyard = 0;
 							int mWayWorkyardToDeposit = (length1 / 5) / 100;
-							int mProductionTime = 0;
-							int mOverallTime = 0;
+//							int mProductionTime = 0;
+//							int mOverallTime = 0;
 							
-							gc.drawString("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
+							g.drawString("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
 						}
 					}
 					
@@ -364,7 +364,7 @@ public class ZoneMap {
 					dst.y -= this.offsetY + 2;
 					
 					if (clip.intersects(dst)) {
-						gc.draw(dst);
+						g.draw(dst);
 					}
 				}
 			}
@@ -497,5 +497,9 @@ public class ZoneMap {
 			cache.put(key, sprite);
 		}
 		return sprite;
+	}
+
+	private boolean drawImage(Graphics2D g, Image image, Rectangle dst, Rectangle src) {
+		return g.drawImage(image, dst.x, dst.y, dst.x+dst.width, dst.y+dst.height, src.x, src.y, src.x+src.width, src.y+src.height, null);
 	}
 }

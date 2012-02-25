@@ -1,22 +1,19 @@
 package de.uxnr.tsoexpert;
 
+import java.awt.EventQueue;
 import java.io.IOException;
 
-import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.swt.widgets.Display;
+import javax.swing.UIManager;
 
 import de.uxnr.proxy.Proxy;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
-import de.uxnr.tsoexpert.game.ZoneHandler;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 import de.uxnr.tsoexpert.ui.MainWindow;
+import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 
 public class TSOExpert {
-	private static Display defaultDisplay;
-	private static Realm defaultRealm;
 	private static Thread proxyThread;
 
 	public static void launchProxy() throws IOException {
@@ -34,32 +31,21 @@ public class TSOExpert {
 	}
 
 	public static void launchWindow() {
-		defaultDisplay = new Display();
-		defaultRealm = SWTObservables.getRealm(defaultDisplay);
-
-		Realm.runWithDefault(defaultRealm, new Runnable() {
-			@Override
+		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				MainWindow window = new MainWindow();
-
-				ZoneHandler.setWindow(window);
-
-				window.setBlockOnOpen(true);
-				window.open();
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					MainWindow window = new MainWindow();
+					window.show();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
-
-		defaultDisplay.dispose();
-	}
-
-	public static void run(Runnable runnable) {
-		defaultRealm.exec(runnable);
 	}
 
 	public static void main(String[] args) throws IOException {
 		launchProxy();
 		launchWindow();
-
-		System.exit(0);
 	}
 }

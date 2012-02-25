@@ -3,7 +3,6 @@ TSO Expert
 
 Dependencies
 ------------
-- SWT		[https://github.com/mback2k/org.eclipse.swt]
 - jlibproxy	[https://github.com/mback2k/jlibproxy]
 - jlibamf	[https://github.com/mback2k/jlibamf]
 
