@@ -19,11 +19,11 @@ import de.uxnr.tsoexpert.map.ZoneMap;
 public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, IDataHandler<ZoneVO> {
 	private static final long serialVersionUID = 7088418888582520017L;
 
-	private ZoneMap m_zonemap;
-	private boolean t_drag;
-	private int t_lastX;
-	private int t_lastY;
-	
+	private ZoneMap zoneMap;
+	private boolean mouseDown;
+	private int lastX;
+	private int lastY;
+
 	public ZoneMapFrame() {
 		super();
 		this.addMouseListener(this);
@@ -32,18 +32,18 @@ public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionLi
 	}
 
 	protected void paintComponent(Graphics g) {
-		if (this.m_zonemap != null) {
-			this.m_zonemap.draw(this.getSize(), (Graphics2D) g);
+		if (this.zoneMap != null) {
+			this.zoneMap.draw(this.getSize(), (Graphics2D) g);
 		}
 	}
 
 	public void renderZoneVO(ZoneVO zoneVO) {
-		this.m_zonemap = new ZoneMap(zoneVO);
+		this.zoneMap = new ZoneMap(zoneVO);
 		this.repaint();
 	}
 	
 	public ZoneMap getZoneMap() {
-		return this.m_zonemap;
+		return this.zoneMap;
 	}
 
 	@Override
@@ -63,23 +63,23 @@ public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionLi
 
 	@Override
 	public void mousePressed(MouseEvent event) {
-		this.t_drag = true;
-		this.t_lastX = event.getX();
-		this.t_lastY = event.getY();
+		this.mouseDown = true;
+		this.lastX = event.getX();
+		this.lastY = event.getY();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent event) {
-		this.t_drag = false;
+		this.mouseDown = false;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent event) {
-		if (this.m_zonemap != null && this.t_drag) {
-			this.m_zonemap.updateOffsetX(this.t_lastX - event.getX());
-			this.m_zonemap.updateOffsetY(this.t_lastY - event.getY());
-			this.t_lastX = event.getX();
-			this.t_lastY = event.getY();
+		if (this.zoneMap != null && this.mouseDown) {
+			this.zoneMap.updateOffsetX(this.lastX - event.getX());
+			this.zoneMap.updateOffsetY(this.lastY - event.getY());
+			this.lastX = event.getX();
+			this.lastY = event.getY();
 			this.repaint();
 		}
 	}
@@ -91,8 +91,8 @@ public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionLi
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if (this.m_zonemap != null) {
-			this.m_zonemap.updateZoomFactor(event.getWheelRotation()*-1);
+		if (this.zoneMap != null) {
+			this.zoneMap.updateZoomFactor(event.getWheelRotation()*-1);
 			this.repaint();
 		}
 	}
