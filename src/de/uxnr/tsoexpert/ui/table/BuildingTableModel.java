@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.ui.zone.table;
+package de.uxnr.tsoexpert.ui.table;
 
 import java.awt.EventQueue;
 import java.io.IOException;

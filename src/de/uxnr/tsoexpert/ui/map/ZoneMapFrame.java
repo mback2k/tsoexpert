@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.ui.zone;
+package de.uxnr.tsoexpert.ui.map;
 
 import java.awt.EventQueue;
 import java.awt.Graphics;

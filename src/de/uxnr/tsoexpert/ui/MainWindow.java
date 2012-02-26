@@ -24,11 +24,11 @@ import javax.swing.JTextPane;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.proxy.GameHandler;
-import de.uxnr.tsoexpert.ui.zone.ZoneMap;
-import de.uxnr.tsoexpert.ui.zone.ZoneMapFrame;
-import de.uxnr.tsoexpert.ui.zone.table.BuildingTableModel;
-import de.uxnr.tsoexpert.ui.zone.table.DepositTableModel;
-import de.uxnr.tsoexpert.ui.zone.table.ResourceTableModel;
+import de.uxnr.tsoexpert.ui.map.ZoneMap;
+import de.uxnr.tsoexpert.ui.map.ZoneMapFrame;
+import de.uxnr.tsoexpert.ui.table.BuildingTableModel;
+import de.uxnr.tsoexpert.ui.table.DepositTableModel;
+import de.uxnr.tsoexpert.ui.table.ResourceTableModel;
 
 public class MainWindow implements PropertyChangeListener {
 	private BuildingTableModel buildingTableModel = new BuildingTableModel();

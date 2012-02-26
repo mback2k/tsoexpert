@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.ui.zone;
+package de.uxnr.tsoexpert.ui.map;
 
 import java.awt.Color;
 import java.awt.Dimension;

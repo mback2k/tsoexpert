@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.ui.zone.table;
+package de.uxnr.tsoexpert.ui.table;
 
 import java.awt.EventQueue;
 import java.io.IOException;
@@ -7,28 +7,28 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import de.uxnr.tsoexpert.game.IDataHandler;
-import de.uxnr.tsoexpert.game.communication.vo.DepositVO;
+import de.uxnr.tsoexpert.game.communication.vo.ResourceVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 
-public class DepositTableModel extends AbstractTableModel implements IDataHandler<ZoneVO> {
+public class ResourceTableModel extends AbstractTableModel implements IDataHandler<ZoneVO> {
 	private static final long serialVersionUID = -6357460357936381670L;
 	
-	private List<DepositVO> deposits;
+	private List<ResourceVO> resources;
 
-	public void populateDeposits(List<DepositVO> deposits) {
-		this.deposits = deposits;
+	public void populateResources(List<ResourceVO> resources) {
+		this.resources = resources;
 		this.fireTableDataChanged();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return 3;
+		return 2;
 	}
 
 	@Override
 	public int getRowCount() {
-		if (this.deposits != null) {
-			return this.deposits.size();
+		if (this.resources != null) {
+			return this.resources.size();
 		}
 		return 0;
 	}
@@ -40,8 +40,6 @@ public class DepositTableModel extends AbstractTableModel implements IDataHandle
 			return "Name";
 		case 1:
 			return "Amount";
-		case 2:
-			return "Capacity";
 		}
 		return null;
     }
@@ -50,11 +48,9 @@ public class DepositTableModel extends AbstractTableModel implements IDataHandle
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch (columnIndex) {
 		case 0:
-			return this.deposits.get(rowIndex).getName_string();
+			return this.resources.get(rowIndex).getName_string();
 		case 1:
-			return this.deposits.get(rowIndex).getAmount();
-		case 2:
-			return this.deposits.get(rowIndex).getMaxAmount();
+			return this.resources.get(rowIndex).getAmount();
 		}
 		return null;
 	}
@@ -64,7 +60,7 @@ public class DepositTableModel extends AbstractTableModel implements IDataHandle
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				populateDeposits(zoneVO.getDeposits());
+				populateResources(zoneVO.getResourcesVO().getResources_vector());
 			}
 		});
 	}
