@@ -20,6 +20,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.proxy.GameHandler;
@@ -39,11 +40,13 @@ public class MainWindow implements PropertyChangeListener {
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
 	private JSplitPane splitPane;
+	private JSplitPane zoneMapSplit;
 
 	private JTable zoneBuildingTable;
 	private JTable zoneResourceTable;
 	private JTable zoneDepositTable;
 	private JPanel zoneMapPanel;
+	private JTextPane zoneText;
 
 	private JLabel lblBackground;
 	private JRadioButton btnBackgroundShow;
@@ -128,16 +131,24 @@ public class MainWindow implements PropertyChangeListener {
 		this.tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		this.frame.getContentPane().add(this.tabbedPane, BorderLayout.CENTER);
 
-		this.splitPane = new JSplitPane();
+		this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		this.tabbedPane.addTab("Map", null, this.splitPane, null);
+
+		this.zoneMapSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		this.splitPane.setLeftComponent(this.zoneMapSplit);
 
 		this.zoneMapFrame = new ZoneMapFrame();
 		this.splitPane.setRightComponent(this.zoneMapFrame);
 
 		this.zoneMapPanel = new JPanel();
-		this.splitPane.setLeftComponent(this.zoneMapPanel);
 		GridBagLayout gbl_zoneMapPanel = new GridBagLayout();
+		gbl_zoneMapPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		gbl_zoneMapPanel.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0};
 		this.zoneMapPanel.setLayout(gbl_zoneMapPanel);
+		this.zoneMapSplit.setLeftComponent(this.zoneMapPanel);
+
+		this.zoneText = new JTextPane();
+		this.zoneMapSplit.setRightComponent(this.zoneText);
 
 		this.lblBackground = new JLabel("Background");
 		GridBagConstraints gbc_lblBackground = new GridBagConstraints();
@@ -298,7 +309,7 @@ public class MainWindow implements PropertyChangeListener {
 
 		this.lblMapValues = new JLabel("Map Values");
 		GridBagConstraints gbc_lblMapValues = new GridBagConstraints();
-		gbc_lblMapValues.insets = new Insets(0, 0, 0, 5);
+		gbc_lblMapValues.insets = new Insets(0, 0, 5, 5);
 		gbc_lblMapValues.gridx = 0;
 		gbc_lblMapValues.gridy = 5;
 		this.zoneMapPanel.add(this.lblMapValues, gbc_lblMapValues);
@@ -308,7 +319,7 @@ public class MainWindow implements PropertyChangeListener {
 		this.btnMapValuesHide.addPropertyChangeListener(this);
 		mapValuesButtonGroup.add(this.btnMapValuesHide);
 		GridBagConstraints gbc_btnMapValuesHide = new GridBagConstraints();
-		gbc_btnMapValuesHide.insets = new Insets(0, 0, 0, 5);
+		gbc_btnMapValuesHide.insets = new Insets(0, 0, 5, 5);
 		gbc_btnMapValuesHide.gridx = 2;
 		gbc_btnMapValuesHide.gridy = 5;
 		this.zoneMapPanel.add(this.btnMapValuesHide, gbc_btnMapValuesHide);
@@ -317,6 +328,7 @@ public class MainWindow implements PropertyChangeListener {
 		this.btnMapValuesDebug.addPropertyChangeListener(this);
 		mapValuesButtonGroup.add(this.btnMapValuesDebug);
 		GridBagConstraints gbc_btnMapValuesDebug = new GridBagConstraints();
+		gbc_btnMapValuesDebug.insets = new Insets(0, 0, 5, 0);
 		gbc_btnMapValuesDebug.gridx = 3;
 		gbc_btnMapValuesDebug.gridy = 5;
 		this.zoneMapPanel.add(this.btnMapValuesDebug, gbc_btnMapValuesDebug);
