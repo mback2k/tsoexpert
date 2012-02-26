@@ -16,25 +16,19 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextPane;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.ui.map.ZoneMap;
 import de.uxnr.tsoexpert.ui.map.ZoneMapFrame;
-import de.uxnr.tsoexpert.ui.table.BuildingTableModel;
-import de.uxnr.tsoexpert.ui.table.DepositTableModel;
-import de.uxnr.tsoexpert.ui.table.ResourceTableModel;
+import de.uxnr.tsoexpert.ui.tab.BuildingTab;
+import de.uxnr.tsoexpert.ui.tab.DepositTab;
+import de.uxnr.tsoexpert.ui.tab.ResourceTab;
 
 public class MainWindow implements PropertyChangeListener {
-	private BuildingTableModel buildingTableModel = new BuildingTableModel();
-	private ResourceTableModel resourceTableModel = new ResourceTableModel();
-	private DepositTableModel depositTableModel = new DepositTableModel();
-
 	private ZoneMapFrame zoneMapFrame;
 
 	private JFrame frame;
@@ -42,9 +36,9 @@ public class MainWindow implements PropertyChangeListener {
 	private JSplitPane splitPane;
 	private JSplitPane zoneMapSplit;
 
-	private JTable zoneBuildingTable;
-	private JTable zoneResourceTable;
-	private JTable zoneDepositTable;
+	private BuildingTab buildingTab;
+	private ResourceTab resourceTab;
+	private DepositTab depositTab;
 	private JPanel zoneMapPanel;
 	private JTextPane zoneText;
 
@@ -107,12 +101,12 @@ public class MainWindow implements PropertyChangeListener {
 	 */
 	public MainWindow() {
 		GameHandler gameHandler = (GameHandler) TSOExpert.getHandler("GameHandler");
-		gameHandler.addDataHandler(1001, this.buildingTableModel);
-		gameHandler.addDataHandler(1001, this.resourceTableModel);
-		gameHandler.addDataHandler(1001, this.depositTableModel);
 
 		this.initialize();
 
+		this.buildingTab.bind(gameHandler);
+		this.resourceTab.bind(gameHandler);
+		this.depositTab.bind(gameHandler);
 		gameHandler.addDataHandler(1001, this.zoneMapFrame);
 	}
 
@@ -333,20 +327,14 @@ public class MainWindow implements PropertyChangeListener {
 		gbc_btnMapValuesDebug.gridy = 5;
 		this.zoneMapPanel.add(this.btnMapValuesDebug, gbc_btnMapValuesDebug);
 
-		this.zoneBuildingTable = new JTable();
-		this.zoneBuildingTable.setAutoCreateColumnsFromModel(true);
-		this.zoneBuildingTable.setModel(this.buildingTableModel);
-		this.tabbedPane.addTab("Buildings", null, new JScrollPane(this.zoneBuildingTable), null);
+		this.buildingTab = new BuildingTab();
+		this.tabbedPane.addTab("Buildings", null, this.buildingTab, null);
 
-		this.zoneResourceTable = new JTable();
-		this.zoneResourceTable.setAutoCreateColumnsFromModel(true);
-		this.zoneResourceTable.setModel(this.resourceTableModel);
-		this.tabbedPane.addTab("Resources", null, new JScrollPane(this.zoneResourceTable), null);
+		this.resourceTab = new ResourceTab();
+		this.tabbedPane.addTab("Resources", null, this.resourceTab, null);
 
-		this.zoneDepositTable = new JTable();
-		this.zoneDepositTable.setAutoCreateColumnsFromModel(true);
-		this.zoneDepositTable.setModel(this.depositTableModel);
-		this.tabbedPane.addTab("Deposits", null, new JScrollPane(this.zoneDepositTable), null);
+		this.depositTab = new DepositTab();
+		this.tabbedPane.addTab("Deposits", null, this.depositTab, null);
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
