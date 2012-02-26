@@ -11,7 +11,6 @@ import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 import de.uxnr.tsoexpert.ui.MainWindow;
-import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 
 public class TSOExpert {
 	private static GameHandler gameHandler;
@@ -24,7 +23,6 @@ public class TSOExpert {
 
 	public static void launchProxy() throws IOException {
 		gameHandler = new GameHandler();
-		gameHandler.addDataHandler(1001, new ZoneHandler());
 		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
 		staticHandler = new StaticHandler();

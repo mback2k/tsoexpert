@@ -5,8 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Map.Entry;
 
 import de.uxnr.amf.AMF;
@@ -22,21 +21,20 @@ import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
+import de.uxnr.tools.ListMap;
 import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
 import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
 import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
 import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
-import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 
 public class GameHandler implements HostHandler {
 	static {
 		Communication.register();
 	}
 
-	@SuppressWarnings("rawtypes")
-	private final Map<Integer, IDataHandler> dataHandlers = new HashMap<Integer, IDataHandler>();
+	private final ListMap<Integer, IDataHandler<? extends AMF_Type>> dataHandlers = new ListMap<Integer, IDataHandler<? extends AMF_Type>>();
 
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
@@ -169,19 +167,25 @@ public class GameHandler implements HostHandler {
 	private synchronized void parseServerActionResult(Integer type, ServerActionResult serverActionResult) throws IOException {
 		AMF_Type value = serverActionResult.getData();
 
-		for (Entry<Integer, IDataHandler> handler : this.dataHandlers.entrySet()) {
+		for (Entry<Integer, List<IDataHandler<? extends AMF_Type>>> handler : this.dataHandlers.entrySet()) {
 			if (type.equals(handler.getKey())) {
-				try {
-					handler.getValue().handleData(value);
-				} catch (Exception e) {
-					throw new IOException(e);
+				for (IDataHandler listener : handler.getValue()) {
+					try {
+						listener.handleData(value);
+					} catch (Exception e) {
+						throw new IOException(e);
+					}
 				}
 			}
 		}
 	}
 
 	public synchronized void addDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
-		this.dataHandlers.put(type, dataHandler);
+		this.dataHandlers.add(type, dataHandler);
+	}
+
+	public synchronized void removeDataHandler(Integer type, IDataHandler<? extends AMF_Type> dataHandler) {
+		this.dataHandlers.remove(type, dataHandler);
 	}
 
 	public synchronized void removeDataHandler(Integer type) {
@@ -190,7 +194,6 @@ public class GameHandler implements HostHandler {
 
 	public static void main(String[] args) throws IOException {
 		GameHandler gameHandler = new GameHandler();
-		gameHandler.addDataHandler(1001, new ZoneHandler());
 		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
 		InputStream stream = new FileInputStream(new File("2.amf"));

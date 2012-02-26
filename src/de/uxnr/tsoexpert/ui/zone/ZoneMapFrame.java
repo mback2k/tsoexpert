@@ -1,5 +1,6 @@
 package de.uxnr.tsoexpert.ui.zone;
 
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
@@ -7,13 +8,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 
+import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 import de.uxnr.tsoexpert.map.ZoneMap;
 
-public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, IDataHandler<ZoneVO> {
 	private static final long serialVersionUID = 7088418888582520017L;
 
 	private ZoneMap m_zonemap;
@@ -26,7 +29,6 @@ public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionLi
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		this.addMouseWheelListener(this);
-		ZoneHandler.setZoneMapFrame(this);
 	}
 
 	protected void paintComponent(Graphics g) {
@@ -93,5 +95,15 @@ public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionLi
 			this.m_zonemap.updateZoomFactor(event.getWheelRotation()*-1);
 			this.repaint();
 		}
+	}
+
+	@Override
+	public void handleData(final ZoneVO zoneVO) throws IOException {
+		EventQueue.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				renderZoneVO(zoneVO);
+			}
+		});
 	}
 }

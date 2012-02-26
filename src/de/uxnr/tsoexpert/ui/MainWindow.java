@@ -25,7 +25,6 @@ import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.map.ZoneMap;
 import de.uxnr.tsoexpert.proxy.GameHandler;
-import de.uxnr.tsoexpert.ui.zone.ZoneHandler;
 import de.uxnr.tsoexpert.ui.zone.ZoneMapFrame;
 import de.uxnr.tsoexpert.ui.zone.table.BuildingTableModel;
 import de.uxnr.tsoexpert.ui.zone.table.DepositTableModel;
@@ -85,7 +84,6 @@ public class MainWindow implements PropertyChangeListener {
 			public void run() {
 				try {
 					GameHandler gameHandler = new GameHandler();
-					gameHandler.addDataHandler(1001, new ZoneHandler());
 					gameHandler.addDataHandler(1014, new PlayerListHandler());
 
 					InputStream stream = new FileInputStream(new File("2.amf"));
