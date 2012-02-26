@@ -46,8 +46,7 @@ public class ZoneMap {
 
 	private BufferedImage doubleBuffer = null;
 	private Rectangle offset = new Rectangle();
-	private Point minOffset = new Point();
-	private Point maxOffset = new Point();
+	private Rectangle frame = new Rectangle();
 	private double zoomFactor = 1.0;
 
 	private boolean showBackground = true;
@@ -84,14 +83,14 @@ public class ZoneMap {
 
 	public void updateOffsetX(int offsetX) {
 		this.offset.x += offsetX;
-		this.offset.x = Math.max(this.offset.x, this.minOffset.x);
-		this.offset.x = Math.min(this.offset.x, this.maxOffset.x);
+		this.offset.x = Math.max(this.offset.x, this.frame.x);
+		this.offset.x = Math.min(this.offset.x, this.frame.width);
 	}
 
 	public void updateOffsetY(int offsetY) {
 		this.offset.y += offsetY;
-		this.offset.y = Math.max(this.offset.y, this.minOffset.y);
-		this.offset.y = Math.min(this.offset.y, this.maxOffset.y);
+		this.offset.y = Math.max(this.offset.y, this.frame.y);
+		this.offset.y = Math.min(this.offset.y, this.frame.height);
 	}
 
 	public void setShowBackground(boolean showBackground) {
@@ -161,13 +160,16 @@ public class ZoneMap {
 		clip.width = (int) Math.ceil(clip.width/this.zoomFactor);
 		clip.height = (int) Math.ceil(clip.height/this.zoomFactor);
 
-		this.minOffset.x = 0;
-		this.minOffset.y = 0;
-		this.maxOffset.x = 0;
-		this.maxOffset.y = 0;
-
 		if (this.showBackground || this.debugBackground) {
-			this.drawBackground(g, clip);
+			this.frame = this.drawBackground(g, clip);
+			this.frame.x *= this.zoomFactor;
+			this.frame.y *= this.zoomFactor;
+			this.frame.width *= this.zoomFactor;
+			this.frame.height *= this.zoomFactor;
+			this.offset.x = Math.max(this.offset.x, this.frame.x);
+			this.offset.y = Math.max(this.offset.y, this.frame.y);
+			this.offset.x = Math.min(this.offset.x, this.frame.width);
+			this.offset.y = Math.min(this.offset.y, this.frame.height);
 		}
 		if (this.showFreeLandscape || this.debugFreeLandscape) {
 			this.drawFreeLandscape(g, clip);
@@ -185,22 +187,13 @@ public class ZoneMap {
 			this.drawMapValues(g, clip);
 		}
 
-		this.minOffset.y *= this.zoomFactor;
-		this.minOffset.x *= this.zoomFactor;
-		this.maxOffset.y *= this.zoomFactor;
-		this.maxOffset.x *= this.zoomFactor;
-
-		this.offset.x = Math.max(this.offset.x, this.minOffset.x);
-		this.offset.y = Math.max(this.offset.y, this.minOffset.y);
-		this.offset.x = Math.min(this.offset.x, this.maxOffset.x);
-		this.offset.y = Math.min(this.offset.y, this.maxOffset.y);
-
 		graphics.drawImage(this.doubleBuffer, 0, 0, null);
 
 		g.dispose();
 	}
 
-	private void drawBackground(Graphics2D g, Rectangle clip) {
+	private Rectangle drawBackground(Graphics2D g, Rectangle clip) {
+		Rectangle frame = new Rectangle();
 		int width = this.backgroundGridWidth;
 		int height = this.backgroundGridHeight;
 		int length = 34;
@@ -213,15 +206,15 @@ public class ZoneMap {
 			if (sprite != null) {
 				Image image = sprite.getImage();
 				Rectangle src = sprite.getBounds();
-				Rectangle dst = sprite.getBounds();
+				Rectangle dst = new Rectangle(src);
 
 				dst.x = (int) (((index % length) * width) + sprite.getOffsetX());
 				dst.y = (int) ((Math.floor(index / length) * height) + sprite.getOffsetY());
 
-				this.minOffset.x = Math.min(this.minOffset.x, dst.x);
-				this.minOffset.y = Math.min(this.minOffset.y, dst.y);
-				this.maxOffset.x = Math.max(this.maxOffset.x, (dst.x + dst.width) - clip.width);
-				this.maxOffset.y =  Math.max(this.maxOffset.y, (dst.y + dst.height) - clip.height);
+				frame.x = Math.min(frame.x, dst.x);
+				frame.y = Math.min(frame.y, dst.y);
+				frame.width = Math.max(frame.width, (dst.x + dst.width) - clip.width);
+				frame.height =  Math.max(frame.height, (dst.y + dst.height) - clip.height);
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -235,6 +228,8 @@ public class ZoneMap {
 
 			index++;
 		}
+
+		return frame;
 	}
 
 	private void drawFreeLandscape(Graphics2D g, Rectangle clip) {
@@ -245,7 +240,7 @@ public class ZoneMap {
 			if (sprite != null) {
 				Image image = sprite.getImage();
 				Rectangle src = sprite.getBounds();
-				Rectangle dst = sprite.getBounds();
+				Rectangle dst = new Rectangle(src);
 
 				dst.x = (int) (freeLandscape.getX() + sprite.getOffsetX());
 				dst.y = (int) (freeLandscape.getY() + sprite.getOffsetY());
@@ -275,7 +270,7 @@ public class ZoneMap {
 			if (sprite != null) {
 				Image image = sprite.getImage();
 				Rectangle src = sprite.getBounds();
-				Rectangle dst = sprite.getBounds();
+				Rectangle dst = new Rectangle(src);
 
 				double margin = (Math.floor(index / length) % 2) / 2;
 
@@ -307,7 +302,7 @@ public class ZoneMap {
 			if (sprite != null) {
 				Image image = sprite.getImage();
 				Rectangle src = sprite.getBounds();
-				Rectangle dst = sprite.getBounds();
+				Rectangle dst = new Rectangle(src);
 
 				double margin = (Math.floor(index / length) % 2) / 2;
 
