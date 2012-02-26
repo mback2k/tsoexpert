@@ -20,16 +20,17 @@ import javax.crypto.spec.SecretKeySpec;
 import sun.misc.BASE64Decoder;
 import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
+import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.resource.IResourceHandler;
 
 @SuppressWarnings("restriction")
-public class StaticHandler implements HostHandler {
+public class StaticHandler implements TSOHandler, HostHandler {
 	public static final String RESOURCE_PREFIX = "SWMMO/";
 	public static final String RESOURCE_PATH = "res/";
 	public static final String PRIVATE_KEY_FILE = "PRIVATE_KEY";
 	
 	private final Map<String, IResourceHandler> resourceHandlers = new HashMap<String, IResourceHandler>();
-	
+
 	@Override
 	public void handleRequest(String requestMethod, URI requestURI,
 			Headers requestHeaders, InputStream body)

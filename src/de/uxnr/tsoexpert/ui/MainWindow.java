@@ -22,7 +22,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import de.uxnr.tsoexpert.TSOExpert;
-import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.map.ZoneMap;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.ui.zone.ZoneMapFrame;
@@ -77,17 +76,17 @@ public class MainWindow implements PropertyChangeListener {
 
 	/**
 	 * Launch the application.
+	 * @throws IOException
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		TSOExpert.launchProxy();
+
 		final Thread proxy = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					GameHandler gameHandler = new GameHandler();
-					gameHandler.addDataHandler(1014, new PlayerListHandler());
-
 					InputStream stream = new FileInputStream(new File("2.amf"));
-
+					GameHandler gameHandler = (GameHandler) TSOExpert.getHandler("GameHandler");
 					gameHandler.parseAMF(stream);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -95,8 +94,8 @@ public class MainWindow implements PropertyChangeListener {
 			}
 		});
 
-		proxy.start();
 		TSOExpert.launchWindow();
+		proxy.start();
 	}
 
 	/**
@@ -104,7 +103,14 @@ public class MainWindow implements PropertyChangeListener {
 	 * @wbp.parser.entryPoint
 	 */
 	public MainWindow() {
-		initialize();
+		GameHandler gameHandler = (GameHandler) TSOExpert.getHandler("GameHandler");
+		gameHandler.addDataHandler(1001, this.buildingTableModel);
+		gameHandler.addDataHandler(1001, this.resourceTableModel);
+		gameHandler.addDataHandler(1001, this.depositTableModel);
+
+		this.initialize();
+
+		gameHandler.addDataHandler(1001, this.zoneMapFrame);
 	}
 
 	public void show() {

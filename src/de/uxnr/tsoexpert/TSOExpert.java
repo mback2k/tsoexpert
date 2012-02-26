@@ -6,13 +6,14 @@ import java.io.IOException;
 import javax.swing.UIManager;
 
 import de.uxnr.proxy.Proxy;
-import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 import de.uxnr.tsoexpert.ui.MainWindow;
 
 public class TSOExpert {
+	private static TSORegistry registry = new TSORegistry();
+
 	private static GameHandler gameHandler;
 	private static StaticHandler staticHandler;
 
@@ -23,10 +24,11 @@ public class TSOExpert {
 
 	public static void launchProxy() throws IOException {
 		gameHandler = new GameHandler();
-		gameHandler.addDataHandler(1014, new PlayerListHandler());
+		registry.register(gameHandler);
 
 		staticHandler = new StaticHandler();
 		staticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
+		registry.register(staticHandler);
 
 		proxy = new Proxy(8000);
 		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", gameHandler);
@@ -57,5 +59,13 @@ public class TSOExpert {
 	public static void main(String[] args) throws IOException {
 		launchProxy();
 		launchWindow();
+	}
+
+	public static TSORegistry getRegistry() {
+		return registry;
+	}
+
+	public static TSOHandler getHandler(String handlerName) {
+		return registry.lookup(handlerName);
 	}
 }

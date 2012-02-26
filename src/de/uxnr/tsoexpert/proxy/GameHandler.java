@@ -22,14 +22,14 @@ import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
 import de.uxnr.tools.ListMap;
+import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.game.IDataHandler;
-import de.uxnr.tsoexpert.game.PlayerListHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
 import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
 import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
 import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
 
-public class GameHandler implements HostHandler {
+public class GameHandler implements TSOHandler, HostHandler {
 	static {
 		Communication.register();
 	}
@@ -194,7 +194,6 @@ public class GameHandler implements HostHandler {
 
 	public static void main(String[] args) throws IOException {
 		GameHandler gameHandler = new GameHandler();
-		gameHandler.addDataHandler(1014, new PlayerListHandler());
 
 		InputStream stream = new FileInputStream(new File("2.amf"));
 		long start = System.currentTimeMillis();
