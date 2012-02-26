@@ -44,13 +44,10 @@ public class ZoneMap {
 	private final ZoneVO zoneVO;
 
 	private BufferedImage doubleBuffer = null;
-	private double zoomFactor = 1;
-	private int offsetX = 0;
-	private int offsetY = 0;
-	private int minOffsetX = 0;
-	private int minOffsetY = 0;
-	private int maxOffsetX = 0;
-	private int maxOffsetY = 0;
+	private Rectangle offset = new Rectangle();
+	private Point minOffset = new Point();
+	private Point maxOffset = new Point();
+	private double zoomFactor = 1.0;
 
 	private boolean showBackground = true;
 	private boolean showFreeLandscape = false;
@@ -73,27 +70,27 @@ public class ZoneMap {
 	}
 
 	public void updateZoomFactor(int count) {
+		double x = (this.offset.x + (this.offset.width / 2)) / this.zoomFactor;
+		double y = (this.offset.y + (this.offset.height / 2)) / this.zoomFactor;
 		if (count > 0 && this.zoomFactor < 1.5) {
 			this.zoomFactor *= 1.1;
-			this.offsetX *= 1.1;
-			this.offsetY *= 1.1;
 		} else if (count < 0 && this.zoomFactor > 0.5) {
 			this.zoomFactor *= 0.9;
-			this.offsetX *= 0.9;
-			this.offsetY *= 0.9;
 		}
+		this.offset.x = (int) (x * this.zoomFactor) - (this.offset.width / 2);
+		this.offset.y = (int) (y * this.zoomFactor) - (this.offset.height / 2);
 	}
 
 	public void updateOffsetX(int offsetX) {
-		this.offsetX += offsetX;
-		this.offsetX = Math.max(this.offsetX, this.minOffsetX);
-		this.offsetX = Math.min(this.offsetX, this.maxOffsetX);
+		this.offset.x += offsetX;
+		this.offset.x = Math.max(this.offset.x, this.minOffset.x);
+		this.offset.x = Math.min(this.offset.x, this.maxOffset.x);
 	}
 
 	public void updateOffsetY(int offsetY) {
-		this.offsetY += offsetY;
-		this.offsetY = Math.max(this.offsetY, this.minOffsetY);
-		this.offsetY = Math.min(this.offsetY, this.maxOffsetY);
+		this.offset.y += offsetY;
+		this.offset.y = Math.max(this.offset.y, this.minOffset.y);
+		this.offset.y = Math.min(this.offset.y, this.maxOffset.y);
 	}
 
 	public void setShowBackground(boolean showBackground) {
@@ -137,30 +134,36 @@ public class ZoneMap {
 	}
 
 	public void draw(Dimension size, Graphics2D graphics) {
-		int width = 0;
-		int height = 0;
-
 		if (this.doubleBuffer != null) {
-			width = this.doubleBuffer.getWidth(null);
-			height = this.doubleBuffer.getHeight(null);
+			this.offset.width = this.doubleBuffer.getWidth(null);
+			this.offset.height = this.doubleBuffer.getHeight(null);
 		}
-		if (this.doubleBuffer == null || size.width != width || size.height != height) {
+		if (this.doubleBuffer == null || this.offset.width != size.width || this.offset.height != size.height) {
 			this.doubleBuffer = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
+			this.offset.width = this.doubleBuffer.getWidth(null);
+			this.offset.height = this.doubleBuffer.getHeight(null);
 		}
 
-		Rectangle clip = new Rectangle(this.offsetX, this.offsetY, size.width, size.height);
+		Rectangle clip = new Rectangle(this.offset);
 		Graphics2D g = this.doubleBuffer.createGraphics();
+
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setBackground(graphics.getBackground());
 		g.setColor(graphics.getColor());
 		g.setFont(graphics.getFont());
-		g.translate(clip.x*-1, clip.y*-1);
 		g.fillRect(0, 0, size.width, size.height);
+		g.translate(clip.x*-1, clip.y*-1);
+		g.scale(this.zoomFactor, this.zoomFactor);
 
-		this.minOffsetX = 0;
-		this.minOffsetY = 0;
-		this.maxOffsetX = 0;
-		this.maxOffsetY = 0;
+		clip.x = (int) Math.floor(clip.x/this.zoomFactor);
+		clip.y = (int) Math.floor(clip.y/this.zoomFactor);
+		clip.width = (int) Math.ceil(clip.width/this.zoomFactor);
+		clip.height = (int) Math.ceil(clip.height/this.zoomFactor);
+
+		this.minOffset.x = 0;
+		this.minOffset.y = 0;
+		this.maxOffset.x = 0;
+		this.maxOffset.y = 0;
 
 		if (this.showBackground || this.debugBackground) {
 			this.drawBackground(g, clip);
@@ -181,10 +184,15 @@ public class ZoneMap {
 			this.drawMapValues(g, clip);
 		}
 
-		this.offsetX = Math.max(this.offsetX, this.minOffsetX);
-		this.offsetY = Math.max(this.offsetY, this.minOffsetY);
-		this.offsetX = Math.min(this.offsetX, this.maxOffsetX);
-		this.offsetY = Math.min(this.offsetY, this.maxOffsetY);
+		this.minOffset.y *= this.zoomFactor;
+		this.minOffset.x *= this.zoomFactor;
+		this.maxOffset.y *= this.zoomFactor;
+		this.maxOffset.x *= this.zoomFactor;
+
+		this.offset.x = Math.max(this.offset.x, this.minOffset.x);
+		this.offset.y = Math.max(this.offset.y, this.minOffset.y);
+		this.offset.x = Math.min(this.offset.x, this.maxOffset.x);
+		this.offset.y = Math.min(this.offset.y, this.maxOffset.y);
 
 		graphics.drawImage(this.doubleBuffer, 0, 0, null);
 
@@ -206,15 +214,13 @@ public class ZoneMap {
 				Rectangle src = sprite.getBounds();
 				Rectangle dst = sprite.getBounds();
 
-				dst.x = (int) ((((index % length) * width) + sprite.getOffsetX()) * this.zoomFactor);
-				dst.y = (int) (((Math.floor(index / length) * height) + sprite.getOffsetY()) * this.zoomFactor);
-				dst.width = (int) (src.width * this.zoomFactor);
-				dst.height = (int) (src.height * this.zoomFactor);
+				dst.x = (int) (((index % length) * width) + sprite.getOffsetX());
+				dst.y = (int) ((Math.floor(index / length) * height) + sprite.getOffsetY());
 
-				this.minOffsetX = Math.min(this.minOffsetX, dst.x);
-				this.minOffsetY = Math.min(this.minOffsetY, dst.y);
-				this.maxOffsetX = Math.max(this.maxOffsetX, (dst.x + dst.width) - clip.width);
-				this.maxOffsetY = Math.max(this.maxOffsetY, (dst.y + dst.height) - clip.height);
+				this.minOffset.x = Math.min(this.minOffset.x, dst.x);
+				this.minOffset.y = Math.min(this.minOffset.y, dst.y);
+				this.maxOffset.x = Math.max(this.maxOffset.x, (dst.x + dst.width) - clip.width);
+				this.maxOffset.y =  Math.max(this.maxOffset.y, (dst.y + dst.height) - clip.height);
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -240,10 +246,8 @@ public class ZoneMap {
 				Rectangle src = sprite.getBounds();
 				Rectangle dst = sprite.getBounds();
 
-				dst.x = (int) ((freeLandscape.getX() + sprite.getOffsetX()) * this.zoomFactor);
-				dst.y = (int) ((freeLandscape.getY() + sprite.getOffsetY()) * this.zoomFactor);
-				dst.width = (int) (src.width * this.zoomFactor);
-				dst.height = (int) (src.height * this.zoomFactor);
+				dst.x = (int) (freeLandscape.getX() + sprite.getOffsetX());
+				dst.y = (int) (freeLandscape.getY() + sprite.getOffsetY());
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -274,10 +278,8 @@ public class ZoneMap {
 
 				double margin = (Math.floor(index / length) % 2) / 2;
 
-				dst.x = (int) (((((index % length) + margin) * width) + sprite.getOffsetX()) * this.zoomFactor);
-				dst.y = (int) (((Math.floor(index / length) * height) + sprite.getOffsetY()) * this.zoomFactor);
-				dst.width = (int) (src.width * this.zoomFactor);
-				dst.height = (int) (src.height * this.zoomFactor);
+				dst.x = (int) ((((index % length) + margin) * width) + sprite.getOffsetX());
+				dst.y = (int) ((Math.floor(index / length) * height) + sprite.getOffsetY());
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -308,10 +310,8 @@ public class ZoneMap {
 
 				double margin = (Math.floor(index / length) % 2) / 2;
 
-				dst.x = (int) (((((index % length) + margin) * width) + sprite.getOffsetX()) * this.zoomFactor);
-				dst.y = (int) (((Math.floor(index / length) * height) + sprite.getOffsetY()) * this.zoomFactor);
-				dst.width = (int) (src.width * this.zoomFactor);
-				dst.height = (int) (src.height * this.zoomFactor);
+				dst.x = (int) ((((index % length) + margin) * width) + sprite.getOffsetX());
+				dst.y = (int) ((Math.floor(index / length) * height) + sprite.getOffsetY());
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -344,8 +344,8 @@ public class ZoneMap {
 						}
 					}
 					
-					dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
-					dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+					dst.x = (int) (((index % length) + margin) * width) - 2;
+					dst.y = (int) (Math.floor(index / length) * height) - 2;
 					dst.width = 4;
 					dst.height = 4;
 					
@@ -368,11 +368,9 @@ public class ZoneMap {
 		for (MapValueItemVO mapValueItemVO : this.zoneVO.getMapValues()) {
 			double margin = (Math.floor(index / length) % 2) / 2;
 
-			Rectangle dst = new Rectangle();
-			dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
-			dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
-			dst.width = (int) (width * this.zoomFactor);
-			dst.height = (int) (height * this.zoomFactor);
+			Rectangle dst = new Rectangle(width, height);
+			dst.x = (int) (((index % length) + margin) * width);
+			dst.y = (int) (Math.floor(index / length) * height);
 
 			switch (mapValueItemVO.getBackgroundBlocking()) {
 				case 0: // BLOCK_TYPE_ALLOW_ALL
@@ -409,8 +407,8 @@ public class ZoneMap {
 
 			double margin = (Math.floor(index / length) % 2) / 2;
 			Point start = new Point();
-			start.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
-			start.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+			start.x = (int) (((index % length) + margin) * width);
+			start.y = (int) (Math.floor(index / length) * height);
 			Point end = new Point(start);
 
 			PathVO path = resourceCreation.getPathVO();
@@ -420,8 +418,8 @@ public class ZoneMap {
 				for (de.uxnr.amf.v3.type.Integer streetGrid : path.getPath()) {
 					index = streetGrid.get();
 
-					end.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
-					end.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+					end.x = (int) (((index % length) + margin) * width);
+					end.y = (int) (Math.floor(index / length) * height);
 
 					g.setColor(Color.BLUE);
 					g.drawLine(start.x, start.y, end.x, end.y);
