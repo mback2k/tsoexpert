@@ -230,9 +230,9 @@ public class ZoneMap {
 						g.drawString("BG: "+name, dst.x, dst.y);
 					}
 				}
-
-				index++;
 			}
+
+			index++;
 		}
 	}
 
