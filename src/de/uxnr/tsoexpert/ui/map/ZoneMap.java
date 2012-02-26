@@ -8,14 +8,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
 
+import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
@@ -26,14 +25,11 @@ import de.uxnr.tsoexpert.game.communication.vo.ResourceCreationVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
 import de.uxnr.tsoexpert.map.Sprite;
 import de.uxnr.tsoexpert.resource.GameSetting;
+import de.uxnr.tsoexpert.resource.SpriteHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
 public class ZoneMap {
-	private static final Map<String, Sprite> backgrounds = new HashMap<String, Sprite>();
-	private static final Map<String, Sprite> landscapes = new HashMap<String, Sprite>();
-	private static final Map<String, Sprite> buildings = new HashMap<String, Sprite>();
-
-	private static final Map<String, Double> nofUpgrades = new HashMap<String, Double>();
+	private final Map<String, Double> nofUpgrades = new HashMap<String, Double>();
 
 	private final int backgroundGridWidth;
 	private final int backgroundGridHeight;
@@ -41,7 +37,7 @@ public class ZoneMap {
 	private final int isoGridWidth;
 	private final int isoGridHeight;
 
-	private final Document gfxDoc;
+	private final XMLHandler xmlHandler;
 	private final ZoneVO zoneVO;
 
 	private BufferedImage doubleBuffer = null;
@@ -62,11 +58,12 @@ public class ZoneMap {
 
 	public ZoneMap(ZoneVO zoneVO) {
 		this.zoneVO = zoneVO;
-		this.gfxDoc = XMLHandler.getDocument(GameSetting.gfx_settings);
-		this.backgroundGridWidth = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@w").intValue();
-		this.backgroundGridHeight = GameSetting.getNumber(this.gfxDoc, "//Globals/BackgroundGrid/@h").intValue();
-		this.isoGridWidth = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@w").intValue();
-		this.isoGridHeight = GameSetting.getNumber(this.gfxDoc, "//Globals/IsoGrid/@h").intValue();
+		this.xmlHandler = (XMLHandler) TSOExpert.getHandler("XMLHandler");
+		Document doc = this.xmlHandler.getDocument(GameSetting.gfx_settings);
+		this.backgroundGridWidth = GameSetting.getNumber(doc, "//Globals/BackgroundGrid/@w").intValue();
+		this.backgroundGridHeight = GameSetting.getNumber(doc, "//Globals/BackgroundGrid/@h").intValue();
+		this.isoGridWidth = GameSetting.getNumber(doc, "//Globals/IsoGrid/@w").intValue();
+		this.isoGridHeight = GameSetting.getNumber(doc, "//Globals/IsoGrid/@h").intValue();
 	}
 
 	public void updateZoomFactor(int count) {
@@ -429,52 +426,33 @@ public class ZoneMap {
 	}
 
 	private Sprite getBackground(String name) {
-		return this.getImage(name, -1, -1, "res/GFX/background_lib/", "//GameObjects/Backgrounds/Background[@name='"+name+"']/@filename", backgrounds);
+		return this.getSprite(name, -1, -1, "GFX/background_lib/", "//GameObjects/Backgrounds/Background[@name='"+name+"']/@filename");
 	}
 
 	private Sprite getLandscape(String name) {
-		return this.getImage(name, -1, -1, "res/GFX/landscape_lib/", "//GameObjects/Landscapes/Landscape[@name='"+name+"']/@filename", landscapes);
+		return this.getSprite(name, -1, -1, "GFX/landscape_lib/", "//GameObjects/Landscapes/Landscape[@name='"+name+"']/@filename");
 	}
 
 	private Sprite getBuilding(String name, int level, int type) {
 		Double nofUpgrades;
-		if (ZoneMap.nofUpgrades.containsKey(name)) {
-			nofUpgrades = ZoneMap.nofUpgrades.get(name);
+		if (this.nofUpgrades.containsKey(name)) {
+			nofUpgrades = this.nofUpgrades.get(name);
 		} else {
-			nofUpgrades = GameSetting.getNumber(this.gfxDoc, "//GameObjects/Buildings/Building[@name='"+name+"']/@nofUpgrades");
-			ZoneMap.nofUpgrades.put(name, nofUpgrades);
+			Document doc = this.xmlHandler.getDocument(GameSetting.gfx_settings);
+			nofUpgrades = GameSetting.getNumber(doc, "//GameObjects/Buildings/Building[@name='"+name+"']/@nofUpgrades");
+			this.nofUpgrades.put(name, nofUpgrades);
 		}
 		if (nofUpgrades != null) {
 			level = Math.min(level, nofUpgrades.intValue()) - 1;
 		} else {
 			level = 0;
 		}
-		return this.getImage(name, level, type, "res/GFX/building_lib/", "//GameObjects/Buildings/Building[@name='"+name+"']/@filename", buildings);
+		return this.getSprite(name, level, type, "GFX/building_lib/", "//GameObjects/Buildings/Building[@name='"+name+"']/@filename");
 	}
 
-	private Sprite getImage(String name, int level, int type, String path, String xpath, Map<String, Sprite> cache) {
-		Sprite sprite = null;
-		String key = name + level + type;
-		if (cache.containsKey(key)) {
-			sprite = cache.get(key);
-		} else {
-			String filename = GameSetting.getString(this.gfxDoc, xpath);
-			if (filename != null) {
-				if (level != -1 && type != -1) {
-					filename = filename.replaceAll("\\.", "["+level+"_"+type+"].");
-				}
-				File file = new File(path+filename);
-				if (file.exists() && file.isFile() && file.canRead()) {
-					try {
-						sprite = new Sprite(file);
-					} catch (IOException e) {
-						sprite = null;
-					}
-				}
-			}
-			cache.put(key, sprite);
-		}
-		return sprite;
+	private Sprite getSprite(String name, int level, int type, String path, String xpath) {
+		SpriteHandler spriteHandler = (SpriteHandler) TSOExpert.getHandler("SpriteHandler");
+		return spriteHandler.getSprite(name, level, type, path, xpath);
 	}
 
 	private boolean drawImage(Graphics2D g, Image image, Rectangle dst, Rectangle src) {

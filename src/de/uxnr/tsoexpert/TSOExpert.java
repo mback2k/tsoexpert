@@ -9,6 +9,7 @@ import javax.swing.UIManager;
 import de.uxnr.proxy.Proxy;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
+import de.uxnr.tsoexpert.resource.SpriteHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 import de.uxnr.tsoexpert.ui.MainWindow;
 
@@ -17,6 +18,8 @@ public class TSOExpert {
 
 	private static GameHandler gameHandler;
 	private static StaticHandler staticHandler;
+	private static XMLHandler xmlHandler;
+	private static SpriteHandler spriteHandler;
 
 	private static Proxy proxy;
 	private static Thread proxyThread;
@@ -27,8 +30,15 @@ public class TSOExpert {
 		gameHandler = new GameHandler();
 		registry.register(gameHandler);
 
+		xmlHandler = new XMLHandler();
+		registry.register(xmlHandler);
+
+		spriteHandler = new SpriteHandler(xmlHandler);
+		registry.register(spriteHandler);
+
 		staticHandler = new StaticHandler();
-		staticHandler.addResourceHandler(".*\\.xml", new XMLHandler());
+		staticHandler.addResourceHandler(".*\\.xml", xmlHandler);
+		staticHandler.addResourceHandler(".*\\.(png|jpg|gif|bin)", spriteHandler);
 		registry.register(staticHandler);
 
 		proxy = new Proxy(8000);

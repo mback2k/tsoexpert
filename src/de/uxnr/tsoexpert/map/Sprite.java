@@ -2,12 +2,11 @@ package de.uxnr.tsoexpert.map;
 
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import de.uxnr.tsoexpert.file.FileData;
 import de.uxnr.tsoexpert.nlib.SpriteLibContainer;
 import de.uxnr.tsoexpert.nlib.data.FrameCalculated;
 import de.uxnr.tsoexpert.nlib.data.Indices;
@@ -22,12 +21,9 @@ public class Sprite {
 
 	private Rectangle bounds;
 
-	public Sprite(File file) throws IOException {
-		String filename = file.getAbsolutePath().replaceAll("\\.(\\w*)$", ".bin");
-		FileInputStream stream = new FileInputStream(filename);
-
-		this.main = spriteLibContainer.loadSpriteLibFromBinaryData(stream);
-		this.image = ImageIO.read(file);
+	public Sprite(FileData bin, FileData gfx) throws IOException {
+		this.main = spriteLibContainer.loadSpriteLibFromBinaryData(bin.getInputStream());
+		this.image = ImageIO.read(gfx.getInputStream());
 
 		this.rescale();
 	}

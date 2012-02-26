@@ -13,23 +13,32 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class XMLHandler implements IResourceHandler {
-	private static final Map<String, Document> documents = new HashMap<String, Document>();
+import de.uxnr.tsoexpert.TSOHandler;
+import de.uxnr.tsoexpert.file.FileData;
+
+public class XMLHandler implements TSOHandler, IResourceHandler {
+	private final Map<String, Document> documents = new HashMap<String, Document>();
 
 	@Override
-	public void handleResource(File file) throws IOException {
-		XMLHandler.loadDocument(file);
+	public void handleResource(FileData fd) throws IOException {
+		this.loadDocument(fd);
 	}
 
-	protected static Document loadDocument(File file) throws IOException {
+	private Document loadDocument(File file) throws IOException {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			dbf.setNamespaceAware(true);
 
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			Document doc = db.parse(file);
+			Document doc = null;
 
-			documents.put(file.getName(), doc);
+			if (file instanceof FileData) {
+				doc = db.parse(((FileData) file).getInputStream());
+			} else {
+				doc = db.parse(file);
+			}
+
+			this.documents.put(file.getName(), doc);
 
 			return doc;
 		} catch (Exception e) {
@@ -37,11 +46,11 @@ public class XMLHandler implements IResourceHandler {
 		}
 	}
 
-	public static Document getDocument(File file) {
-		String filename = file.getName();
+	public Document getDocument(File file) {
+		String name = file.getName();
 
-		if (documents.containsKey(filename))
-			return documents.get(filename);
+		if (this.documents.containsKey(name))
+			return this.documents.get(name);
 
 		try {
 			return loadDocument(file);
@@ -50,12 +59,13 @@ public class XMLHandler implements IResourceHandler {
 		}
 	}
 
-	public static Document getDocument(String filename) {
-		return documents.get(filename);
+	public Document getDocument(String name) {
+		return this.documents.get(name);
 	}
 
 	public static void main(String[] args) throws IOException {
-		NodeList nodes = getDocument(GameSetting.gfx_settings).getElementsByTagName("Building");
+		XMLHandler xmlHandler = new XMLHandler();
+		NodeList nodes = xmlHandler.getDocument(GameSetting.gfx_settings).getElementsByTagName("Building");
 
 		for (int i = 0; i < nodes.getLength(); i++) {
 			Node node = nodes.item(i);
