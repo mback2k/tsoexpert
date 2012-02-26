@@ -22,8 +22,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import de.uxnr.tsoexpert.TSOExpert;
-import de.uxnr.tsoexpert.map.ZoneMap;
 import de.uxnr.tsoexpert.proxy.GameHandler;
+import de.uxnr.tsoexpert.ui.zone.ZoneMap;
 import de.uxnr.tsoexpert.ui.zone.ZoneMapFrame;
 import de.uxnr.tsoexpert.ui.zone.table.BuildingTableModel;
 import de.uxnr.tsoexpert.ui.zone.table.DepositTableModel;

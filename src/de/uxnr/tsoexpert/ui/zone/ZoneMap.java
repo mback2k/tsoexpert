@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.map;
+package de.uxnr.tsoexpert.ui.zone;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,6 +24,7 @@ import de.uxnr.tsoexpert.game.communication.vo.MapValueItemVO;
 import de.uxnr.tsoexpert.game.communication.vo.PathVO;
 import de.uxnr.tsoexpert.game.communication.vo.ResourceCreationVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+import de.uxnr.tsoexpert.map.Sprite;
 import de.uxnr.tsoexpert.resource.GameSetting;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
