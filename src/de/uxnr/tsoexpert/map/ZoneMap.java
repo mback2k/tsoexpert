@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -147,14 +148,14 @@ public class ZoneMap {
 			this.doubleBuffer = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_ARGB);
 		}
 
+		Rectangle clip = new Rectangle(this.offsetX, this.offsetY, size.width, size.height);
 		Graphics2D g = this.doubleBuffer.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 		g.setBackground(graphics.getBackground());
 		g.setColor(graphics.getColor());
 		g.setFont(graphics.getFont());
+		g.translate(clip.x*-1, clip.y*-1);
 		g.fillRect(0, 0, size.width, size.height);
-
-		Rectangle clip = new Rectangle(size);
 
 		this.minOffsetX = 0;
 		this.minOffsetY = 0;
@@ -215,9 +216,6 @@ public class ZoneMap {
 				this.maxOffsetX = Math.max(this.maxOffsetX, (dst.x + dst.width) - clip.width);
 				this.maxOffsetY = Math.max(this.maxOffsetY, (dst.y + dst.height) - clip.height);
 
-				dst.x -= this.offsetX;
-				dst.y -= this.offsetY;
-
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
 
@@ -246,9 +244,6 @@ public class ZoneMap {
 				dst.y = (int) ((freeLandscape.getY() + sprite.getOffsetY()) * this.zoomFactor);
 				dst.width = (int) (src.width * this.zoomFactor);
 				dst.height = (int) (src.height * this.zoomFactor);
-
-				dst.x -= this.offsetX;
-				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -284,9 +279,6 @@ public class ZoneMap {
 				dst.width = (int) (src.width * this.zoomFactor);
 				dst.height = (int) (src.height * this.zoomFactor);
 
-				dst.x -= this.offsetX;
-				dst.y -= this.offsetY;
-
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
 
@@ -320,9 +312,6 @@ public class ZoneMap {
 				dst.y = (int) (((Math.floor(index / length) * height) + sprite.getOffsetY()) * this.zoomFactor);
 				dst.width = (int) (src.width * this.zoomFactor);
 				dst.height = (int) (src.height * this.zoomFactor);
-
-				dst.x -= this.offsetX;
-				dst.y -= this.offsetY;
 
 				if (clip.intersects(dst)) {
 					this.drawImage(g, image, dst, src);
@@ -360,9 +349,6 @@ public class ZoneMap {
 					dst.width = 4;
 					dst.height = 4;
 					
-					dst.x -= this.offsetX + 2;
-					dst.y -= this.offsetY + 2;
-					
 					if (clip.intersects(dst)) {
 						g.draw(dst);
 					}
@@ -382,10 +368,11 @@ public class ZoneMap {
 		for (MapValueItemVO mapValueItemVO : this.zoneVO.getMapValues()) {
 			double margin = (Math.floor(index / length) % 2) / 2;
 
-			int x = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
-			int y = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
-			int w = (int) (width * this.zoomFactor);
-			int h = (int) (height * this.zoomFactor);
+			Rectangle dst = new Rectangle();
+			dst.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
+			dst.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+			dst.width = (int) (width * this.zoomFactor);
+			dst.height = (int) (height * this.zoomFactor);
 
 			switch (mapValueItemVO.getBackgroundBlocking()) {
 				case 0: // BLOCK_TYPE_ALLOW_ALL
@@ -398,8 +385,6 @@ public class ZoneMap {
 					g.setColor(Color.BLUE);
 					break;
 			}
-
-			Rectangle dst = new Rectangle(x, y, w, h);
 
 			if (clip.intersects(dst)) {
 				g.draw(dst);
@@ -423,10 +408,10 @@ public class ZoneMap {
 			int index = resourceCreation.getResourceCreationHouseGrid();
 
 			double margin = (Math.floor(index / length) % 2) / 2;
-			int startX = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
-			int startY = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
-			int endX = startX;
-			int endY = startY;
+			Point start = new Point();
+			start.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
+			start.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
+			Point end = new Point(start);
 
 			PathVO path = resourceCreation.getPathVO();
 			if (path != null) {
@@ -435,14 +420,13 @@ public class ZoneMap {
 				for (de.uxnr.amf.v3.type.Integer streetGrid : path.getPath()) {
 					index = streetGrid.get();
 
-					endX = (int) (((((index % length) + margin) * width) * this.zoomFactor) - this.offsetX);
-					endY = (int) (((Math.floor(index / length) * height) * this.zoomFactor) - this.offsetY);
+					end.x = (int) ((((index % length) + margin) * width) * this.zoomFactor);
+					end.y = (int) ((Math.floor(index / length) * height) * this.zoomFactor);
 
 					g.setColor(Color.BLUE);
-					g.drawLine(startX, startY, endX, endY);
+					g.drawLine(start.x, start.y, end.x, end.y);
 
-					startX = endX;
-					startY = endY;
+					start.setLocation(end);
 				}
 			}
 		}
