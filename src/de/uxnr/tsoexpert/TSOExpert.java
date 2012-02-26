@@ -3,6 +3,7 @@ package de.uxnr.tsoexpert;
 import java.awt.EventQueue;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import de.uxnr.proxy.Proxy;
@@ -57,8 +58,16 @@ public class TSOExpert {
 	}
 
 	public static void main(String[] args) throws IOException {
-		launchProxy();
-		launchWindow();
+		try {
+			launchProxy();
+			launchWindow();
+		} catch (Error e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error",
+					JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Exception",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public static TSORegistry getRegistry() {
