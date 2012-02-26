@@ -8,6 +8,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import de.uxnr.amf.AMF;
 import de.uxnr.amf.AMF_Message;
@@ -42,6 +45,16 @@ public class GameHandler implements HostHandler {
 	public void handleRequest(String requestMethod, URI requestURI,
 			Headers requestHeaders, InputStream body) throws IOException {
 
+		String contentEncoding = requestHeaders.getFirst("content-encoding");
+		if (contentEncoding != null) {
+			int size = Math.max(Math.min(body.available(), 65536), 1024);
+			if (contentEncoding.equalsIgnoreCase("gzip")) {
+				body = new GZIPInputStream(body, size);
+			} else if (contentEncoding.equalsIgnoreCase("deflate")) {
+				body = new InflaterInputStream(body, new Inflater(), size);
+			}
+		}
+
 		String contentType = requestHeaders.getFirst("content-type");
 		if (contentType != null) {
 			if (contentType.equalsIgnoreCase("application/x-amf")) {
@@ -54,6 +67,16 @@ public class GameHandler implements HostHandler {
 	public void handleResponse(String requestMethod, URI requestURI,
 			Headers requestHeaders,
 			Headers responseHeaders, InputStream body) throws IOException {
+
+		String contentEncoding = responseHeaders.getFirst("content-encoding");
+		if (contentEncoding != null) {
+			int size = Math.max(Math.min(body.available(), 65536), 1024);
+			if (contentEncoding.equalsIgnoreCase("gzip")) {
+				body = new GZIPInputStream(body, size);
+			} else if (contentEncoding.equalsIgnoreCase("deflate")) {
+				body = new InflaterInputStream(body, new Inflater(), size);
+			}
+		}
 
 		String contentType = responseHeaders.getFirst("content-type");
 		if (contentType != null) {
