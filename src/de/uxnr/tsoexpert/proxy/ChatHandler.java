@@ -64,7 +64,6 @@ public class ChatHandler implements HostHandler {
 				groupchat = true;
 			if (attribute.getNodeName().equalsIgnoreCase("from") && attribute.getNodeValue().contains("trade@"))
 				fromtrade = true;
-
 		}
 		return groupchat && fromtrade;
 	}

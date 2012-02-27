@@ -3,20 +3,23 @@ package de.uxnr.tsoexpert.game.trade;
 import de.uxnr.tsoexpert.game.player.Player;
 
 public class TradeRequest implements Comparable<TradeRequest> {
-	private String bid;
-	private int bidsize;
-	private String demand;
-	private int demandsize;
-	private Player player;
-	private boolean aktiv;
+	private final String bid;
+	private final int bidsize;
+	private final String demand;
+	private final int demandsize;
+	private final Player player;
+	private final boolean aktiv;
+	private final long time;
 
 	public TradeRequest(String input, Player player) {
 		String[] splits = input.split("|");
+		this.bid = splits[1];
 		this.bidsize = Integer.parseInt(splits[1]);
 		this.demand = splits[2];
 		this.demandsize = Integer.parseInt(splits[3]);
 		this.player = player;
 		this.aktiv = true;
+		this.time = System.currentTimeMillis();
 	}
 
 	public String getBid() {
@@ -39,8 +42,12 @@ public class TradeRequest implements Comparable<TradeRequest> {
 		return this.player;
 	}
 
-	public boolean isaktiv() {
+	public boolean isAktiv() {
 		return this.aktiv;
+	}
+
+	public long getTime() {
+		return this.time;
 	}
 
 	@Override
@@ -66,6 +73,7 @@ public class TradeRequest implements Comparable<TradeRequest> {
 		return 0;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o != null && o instanceof TradeRequest) {
 			TradeRequest tr = (TradeRequest) o;
@@ -75,10 +83,12 @@ public class TradeRequest implements Comparable<TradeRequest> {
 		return false;
 	}
 
+	@Override
 	public String toString() {
-		return new StringBuilder(aktiv ? "Aktiv" : "Inaktiv").append(player.toString()).append(" bids ").append(bidsize).append(" pct. of ").append(bid).append(" and demands ").append(demandsize).append(" pct. of ").append(demand).toString();
+		return new StringBuilder(this.aktiv ? "Aktiv" : "Inaktiv").append(this.player.toString()).append(" bids ").append(this.bidsize).append(" pct. of ").append(this.bid).append(" and demands ").append(this.demandsize).append(" pct. of ").append(this.demand).toString();
 	}
 
+	@Override
 	public int hashCode() {
 		return this.toString().hashCode();
 	}
