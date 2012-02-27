@@ -12,8 +12,8 @@ public class TradeRequest implements Comparable<TradeRequest> {
 	private final long time;
 
 	public TradeRequest(String input, Player player) {
-		String[] splits = input.split("|");
-		this.bid = splits[1];
+		String[] splits = input.split("\\|");
+		this.bid = splits[0];
 		this.bidsize = Integer.parseInt(splits[1]);
 		this.demand = splits[2];
 		this.demandsize = Integer.parseInt(splits[3]);
@@ -92,5 +92,4 @@ public class TradeRequest implements Comparable<TradeRequest> {
 	public int hashCode() {
 		return this.toString().hashCode();
 	}
-
 }
