@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import de.uxnr.proxy.Proxy;
+import de.uxnr.tsoexpert.proxy.ChatHandler;
 import de.uxnr.tsoexpert.proxy.GameHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.resource.SpriteHandler;
@@ -20,6 +21,7 @@ public class TSOExpert {
 	private static StaticHandler staticHandler;
 	private static XMLHandler xmlHandler;
 	private static SpriteHandler spriteHandler;
+	private static ChatHandler chatHandler;
 
 	private static Proxy proxy;
 	private static Thread proxyThread;
@@ -41,9 +43,12 @@ public class TSOExpert {
 		staticHandler.addResourceHandler(".*\\.(png|jpg|gif|bin)", spriteHandler);
 		registry.register(staticHandler);
 
+		chatHandler = new ChatHandler();
+
 		proxy = new Proxy(8000);
 		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", gameHandler);
 		proxy.addHostHandler("static(\\d*)\\.cdn\\.ubi\\.com", staticHandler);
+		proxy.addHostHandler("(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})", chatHandler);
 
 		proxyThread = new Thread(proxy);
 		proxyThread.start();
