@@ -24,13 +24,13 @@ import de.uxnr.amf.v3.type.Array;
 import de.uxnr.amf.v3.type.Object;
 import de.uxnr.proxy.Headers;
 import de.uxnr.proxy.HostHandler;
-import de.uxnr.tools.ListMap;
 import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.communication.Communication;
 import de.uxnr.tsoexpert.game.communication.vo.ServerActionResult;
 import de.uxnr.tsoexpert.game.communication.vo.ServerCall;
 import de.uxnr.tsoexpert.game.communication.vo.ServerResponse;
+import de.uxnr.util.ListMap;
 
 public class GameHandler implements TSOHandler, HostHandler {
 	static {
