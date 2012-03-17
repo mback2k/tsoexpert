@@ -22,6 +22,8 @@ public class MainWindow {
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
 
+	private StatusBar statusBar;
+
 	private ZoneMapTab zoneMapTab;
 	private BuildingTab buildingTab;
 	private ResourceTab resourceTab;
@@ -80,6 +82,9 @@ public class MainWindow {
 		this.frame = new JFrame("TSO Expert");
 		this.frame.setBounds(100, 100, 700, 450);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		this.statusBar = new StatusBar(this.frame);
+		this.frame.add(this.statusBar, BorderLayout.SOUTH);
 
 		this.tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		this.frame.getContentPane().add(this.tabbedPane, BorderLayout.CENTER);
