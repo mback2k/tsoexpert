@@ -22,8 +22,12 @@ public class StaticHandler implements TSOHandler, HostHandler {
 	public static final String RESOURCE_PATH = "res/";
 
 	private final Map<String, IResourceHandler> resourceHandlers = new HashMap<String, IResourceHandler>();
+	private final Map<String, FileData> fileCache = new HashMap<String, FileData>();
+
 	private final FileDecrypter fileDecrypter;
-	private final boolean fileSave = false;
+
+	private final boolean holdFiles = true;
+	private final boolean saveFiles = false;
 
 	public StaticHandler() throws IOException {
 		this.fileDecrypter = new FileDecrypter();
@@ -55,7 +59,7 @@ public class StaticHandler implements TSOHandler, HostHandler {
 			if (path.endsWith("_enc")) {
 				fd = this.fileDecrypter.decryptFile(fd);
 			}
-			if (this.fileSave) {
+			if (this.saveFiles) {
 				this.saveResource(fd);
 			}
 			this.handleResource(fd);
@@ -80,6 +84,10 @@ public class StaticHandler implements TSOHandler, HostHandler {
 	public synchronized void handleResource(FileData fd) throws IOException {
 		String path = fd.getPath();
 
+		if (this.holdFiles) {
+			this.fileCache.put(path, fd);
+		}
+
 		for (Entry<String, IResourceHandler> handler : this.resourceHandlers.entrySet()) {
 			if (path.matches(handler.getKey())) {
 				try {
@@ -97,5 +105,25 @@ public class StaticHandler implements TSOHandler, HostHandler {
 
 	public synchronized void removeResourceHandler(String path) {
 		this.resourceHandlers.remove(path);
+	}
+
+	public synchronized FileData getFile(String path) {
+		return this.fileCache.get(path);
+	}
+
+	public synchronized FileData purgeFile(String path) {
+		return this.fileCache.remove(path);
+	}
+
+	public synchronized int getTotalFileCount() {
+		return this.fileCache.size();
+	}
+
+	public synchronized long getTotalFileSize() {
+		long size = 0;
+		for (FileData fileData : this.fileCache.values()) {
+			size += fileData.length();
+		}
+		return size;
 	}
 }
