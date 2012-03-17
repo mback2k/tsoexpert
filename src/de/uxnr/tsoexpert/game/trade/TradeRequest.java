@@ -8,17 +8,19 @@ public class TradeRequest implements Comparable<TradeRequest> {
 	private final String demand;
 	private final int demandsize;
 	private final Player player;
-	private final boolean aktiv;
+	private final boolean active;
 	private final long time;
 
 	public TradeRequest(String input, Player player) {
 		String[] splits = input.split("\\|");
+		if (splits.length < 4)
+			throw new IllegalArgumentException("Incomplete trade request");
 		this.bid = splits[0];
 		this.bidsize = Integer.parseInt(splits[1]);
 		this.demand = splits[2];
 		this.demandsize = Integer.parseInt(splits[3]);
 		this.player = player;
-		this.aktiv = true;
+		this.active = true;
 		this.time = System.currentTimeMillis();
 	}
 
@@ -43,7 +45,7 @@ public class TradeRequest implements Comparable<TradeRequest> {
 	}
 
 	public boolean isAktiv() {
-		return this.aktiv;
+		return this.active;
 	}
 
 	public long getTime() {
@@ -75,17 +77,45 @@ public class TradeRequest implements Comparable<TradeRequest> {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o != null && o instanceof TradeRequest) {
-			TradeRequest tr = (TradeRequest) o;
-			if (this.aktiv == tr.aktiv && tr.bid.equals(this.bid) && tr.demand.equals(this.demand) && this.bidsize == tr.bidsize && this.demandsize == tr.demandsize)
-				return true;
-		}
-		return false;
+		if (o == null)
+			return false;
+
+		if (!(o instanceof TradeRequest))
+			return false;
+
+		TradeRequest tr = (TradeRequest) o;
+		if (this.active != tr.active)
+			return false;
+
+		if (this.bidsize != tr.bidsize)
+			return false;
+
+		if (this.demandsize != tr.demandsize)
+			return false;
+
+		if (!tr.bid.equals(this.bid))
+			return false;
+
+		if (!tr.demand.equals(this.demand))
+			return false;
+
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder(this.aktiv ? "Aktiv" : "Inaktiv").append(this.player.toString()).append(" bids ").append(this.bidsize).append(" pct. of ").append(this.bid).append(" and demands ").append(this.demandsize).append(" pct. of ").append(this.demand).toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.active ? "Active: " : "Inactive: ");
+		sb.append(this.player.toString());
+		sb.append(" bids ");
+		sb.append(this.bidsize);
+		sb.append(" of ");
+		sb.append(this.bid);
+		sb.append(" and demands ");
+		sb.append(this.demandsize);
+		sb.append(" of ");
+		sb.append(this.demand);
+		return sb.toString();
 	}
 
 	@Override
