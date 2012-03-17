@@ -10,6 +10,7 @@ import org.w3c.dom.Document;
 import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.file.FileData;
 import de.uxnr.tsoexpert.map.Sprite;
+import de.uxnr.tsoexpert.proxy.IResourceHandler;
 
 public class SpriteHandler implements TSOHandler, IResourceHandler {
 	private final Map<String, FileData> binMap = new HashMap<String, FileData>();

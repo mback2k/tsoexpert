@@ -12,8 +12,8 @@ import java.io.IOException;
 
 import javax.swing.JPanel;
 
-import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+import de.uxnr.tsoexpert.proxy.IDataHandler;
 
 public class ZoneMapFrame extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, IDataHandler<ZoneVO> {
 	private static final long serialVersionUID = 7088418888582520017L;

@@ -8,8 +8,8 @@ import java.util.Vector;
 import javax.swing.table.AbstractTableModel;
 
 import de.uxnr.tsoexpert.file.FileData;
+import de.uxnr.tsoexpert.proxy.IResourceHandler;
 import de.uxnr.tsoexpert.proxy.StaticHandler;
-import de.uxnr.tsoexpert.resource.IResourceHandler;
 
 public class FileCacheTableModel extends AbstractTableModel implements IResourceHandler {
 	private static final long serialVersionUID = 380685821634495899L;

@@ -15,7 +15,6 @@ import de.uxnr.proxy.HostHandler;
 import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.file.FileData;
 import de.uxnr.tsoexpert.file.FileDecrypter;
-import de.uxnr.tsoexpert.resource.IResourceHandler;
 
 public class StaticHandler implements TSOHandler, HostHandler {
 	public static final String RESOURCE_PREFIX = "SWMMO/";
