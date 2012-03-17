@@ -55,6 +55,6 @@ public class BinaryStream {
 				break;
 			}
 		}
-		return new String(this.bytes, offset, length);
+		return new String(this.bytes, offset, length).intern();
 	}
 }
