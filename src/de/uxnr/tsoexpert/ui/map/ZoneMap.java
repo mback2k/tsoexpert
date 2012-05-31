@@ -314,34 +314,43 @@ public class ZoneMap {
 						g.drawString("B: "+name, dst.x, dst.y);
 					}
 
+//					int mWayWarehouseToWorkyard = 0;
+					int mWayWorkyardToDeposit = 0;
+//					int mProductionTime = 0;
+//					int mOverallTime = 0;
+
+					int distance = Integer.MAX_VALUE;
+					for (BuildingVO warehouse : this.zoneVO.getBuildings()) {
+						if (warehouse.getBuildingName_string().equalsIgnoreCase("warehouse") ||
+							warehouse.getBuildingName_string().equalsIgnoreCase("mayorhouse")) {
+						}
+					}
+
 					for (ResourceCreationVO resourceCreation : this.zoneVO.getResourceCreations()) {
 						int house = resourceCreation.getResourceCreationHouseGrid();
 						if (house == index) {
 							PathVO path = resourceCreation.getPathVO();
 							if (path == null)
 								continue;
-							
+
 							List<de.uxnr.amf.v3.type.Integer> list = path.getPath();
 							if (list == null)
 								continue;
-							
+
 							int length1 = list.size() * 10000;
 //							int length2 = length1 * 2;
 
-//							int mWayWarehouseToWorkyard = 0;
-							int mWayWorkyardToDeposit = (length1 / 5) / 100;
-//							int mProductionTime = 0;
-//							int mOverallTime = 0;
-							
-							g.drawString("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
+							mWayWorkyardToDeposit = (length1 / 5) / 100;
 						}
 					}
-					
+
+					g.drawString("B: "+name+" ("+mWayWorkyardToDeposit+")", dst.x, dst.y);
+
 					dst.x = (int) (((index % length) + margin) * width) - 2;
 					dst.y = (int) (Math.floor(index / length) * height) - 2;
 					dst.width = 4;
 					dst.height = 4;
-					
+
 					if (clip.intersects(dst)) {
 						g.draw(dst);
 					}
