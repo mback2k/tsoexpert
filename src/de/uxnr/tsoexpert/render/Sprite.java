@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.map;
+package de.uxnr.tsoexpert.render;
 
 import java.awt.Image;
 import java.awt.Rectangle;
