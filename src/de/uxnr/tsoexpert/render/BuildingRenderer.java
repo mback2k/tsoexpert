@@ -3,12 +3,14 @@ package de.uxnr.tsoexpert.render;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.uxnr.tsoexpert.model.Building;
 import de.uxnr.tsoexpert.model.GridPosition;
 import de.uxnr.tsoexpert.resource.GameSetting;
+import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class BuildingRenderer extends AbstractRenderer {
 	private final Map<String, Double> nofUpgrades = new HashMap<String, Double>();
@@ -40,7 +42,7 @@ public class BuildingRenderer extends AbstractRenderer {
 		return filename;
 	}
 
-	private Sprite getSprite(Building building) {
+	private Sprite getSprite(final Building building) {
 		if (this.sprites.containsKey(building))
 			return this.sprites.get(building);
 		
@@ -49,10 +51,14 @@ public class BuildingRenderer extends AbstractRenderer {
 		int type = 0; // TODO: Figure out what this part of the filename is used for
 		
 		String filename = this.getSpriteFilename("//GameObjects/Buildings/Building[@name='"+name+"']/@filename", level, type);
-		Sprite sprite = this.getSprite("GFX/building_lib/", filename);
+		Sprite sprite = this.getSprite("GFX/building_lib/", filename, new ISpriteHandler() {
+			@Override
+			public void handleSprite(String path, Sprite sprite) throws IOException {
+				sprites.put(building, sprite);
+			}
+		});
 
-		if (sprite != null)
-			this.sprites.put(building, sprite);
+		this.sprites.put(building, sprite);
 
 		return sprite;
 	}
@@ -61,9 +67,7 @@ public class BuildingRenderer extends AbstractRenderer {
 		if (this.getMode() == Mode.HIDE)
 			return null;
 
-		Sprite sprite = this.getSprite(building);
-		GridPosition position = building.getPosition();
-		
+		Sprite sprite = this.getSprite(building);		
 		if (sprite == null)
 			return null;
 		
@@ -71,6 +75,7 @@ public class BuildingRenderer extends AbstractRenderer {
 		Rectangle src = sprite.getBounds();
 		Rectangle dst = new Rectangle(src);
 
+		GridPosition position = building.getPosition();
 		dst.x = (int) (position.getX() + sprite.getOffsetX());
 		dst.y = (int) (position.getY() + sprite.getOffsetY());
 

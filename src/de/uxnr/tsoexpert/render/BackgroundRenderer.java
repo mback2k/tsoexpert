@@ -3,26 +3,32 @@ package de.uxnr.tsoexpert.render;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.uxnr.tsoexpert.model.Background;
 import de.uxnr.tsoexpert.model.GridPosition;
+import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class BackgroundRenderer extends AbstractRenderer {
 	private final Map<Background, Sprite> sprites = new HashMap<Background, Sprite>();
 
-	private Sprite getSprite(Background background) {
+	private Sprite getSprite(final Background background) {
 		if (this.sprites.containsKey(background))
 			return this.sprites.get(background);
 		
 		String name = background.getName();
 		
 		String filename = this.getSpriteFilename("//GameObjects/Backgrounds/Background[@name='"+name+"']/@filename");
-		Sprite sprite = this.getSprite("GFX/background_lib/", filename);
+		Sprite sprite = this.getSprite("GFX/background_lib/", filename, new ISpriteHandler() {
+			@Override
+			public void handleSprite(String path, Sprite sprite) throws IOException {
+				sprites.put(background, sprite);
+			}
+		});
 
-		if (sprite != null)
-			this.sprites.put(background, sprite);
+		this.sprites.put(background, sprite);
 
 		return sprite;
 	}
@@ -32,8 +38,6 @@ public class BackgroundRenderer extends AbstractRenderer {
 			return null;
 
 		Sprite sprite = this.getSprite(background);
-		GridPosition position = background.getPosition();
-		
 		if (sprite == null)
 			return null;
 		
@@ -41,6 +45,7 @@ public class BackgroundRenderer extends AbstractRenderer {
 		Rectangle src = sprite.getBounds();
 		Rectangle dst = new Rectangle(src);
 
+		GridPosition position = background.getPosition();
 		dst.x = (int) (position.getX() + sprite.getOffsetX());
 		dst.y = (int) (position.getY() + sprite.getOffsetY());
 

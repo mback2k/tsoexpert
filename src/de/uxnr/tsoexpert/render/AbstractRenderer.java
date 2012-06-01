@@ -3,9 +3,11 @@ package de.uxnr.tsoexpert.render;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.io.File;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.resource.GameSetting;
+import de.uxnr.tsoexpert.resource.ISpriteHandler;
 import de.uxnr.tsoexpert.resource.SpriteHandler;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
@@ -29,7 +31,16 @@ public abstract class AbstractRenderer {
 	}
 
 	protected Sprite getSprite(String folder, String filename) {
-		return this.spriteHandler.getSprite(folder, filename);
+		return this.getSprite(folder, filename, null);
+	}
+
+	protected Sprite getSprite(String folder, String filename, ISpriteHandler spriteHandler) {
+		String path = new File(folder, filename).getPath();
+		Sprite sprite = this.spriteHandler.getSprite(path);
+		if (sprite == null && spriteHandler != null) {
+			this.spriteHandler.addSpriteHandler(path, spriteHandler);
+		}
+		return sprite;
 	}
 
 	protected boolean drawImage(Graphics2D graphics, Image image, Rectangle dst, Rectangle src) {
