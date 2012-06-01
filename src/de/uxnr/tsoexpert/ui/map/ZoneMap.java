@@ -181,7 +181,9 @@ public class ZoneMap {
 		clip.height = (int) Math.ceil(clip.height/this.zoomFactor);
 
 		if (this.showBackground || this.debugBackground) {
-			this.frame = this.drawBackground(g, clip);
+			this.frame = this.backgroundRegistry.renderBackgrounds(this.backgroundRenderer, g, clip);
+			this.frame.width -= clip.width;
+			this.frame.height -= clip.height;
 			this.frame.x *= this.zoomFactor;
 			this.frame.y *= this.zoomFactor;
 			this.frame.width *= this.zoomFactor;
@@ -192,13 +194,13 @@ public class ZoneMap {
 			this.offset.y = Math.min(this.offset.y, this.frame.height);
 		}
 		if (this.showFreeLandscape || this.debugFreeLandscape) {
-			this.drawFreeLandscape(g, clip);
+			this.freeLandscapeRegistry.renderFreeLandscapes(this.freeLandscapeRenderer, g, clip);
 		}
 		if (this.showLandscape || this.debugLandscape) {
-			this.drawLandscape(g, clip);
+			this.landscapeRegistry.renderLandscapes(this.landscapeRenderer, g, clip);
 		}
 		if (this.showBuilding || this.debugBuilding) {
-			this.drawBuildings(g, clip);
+			this.buildingRegistry.renderBuildings(this.buildingRenderer, g, clip);
 		}
 		if (this.debugResourceCreations) {
 			this.drawResourceCreations(g, clip);
@@ -210,25 +212,6 @@ public class ZoneMap {
 		graphics.drawImage(this.doubleBuffer, 0, 0, null);
 
 		g.dispose();
-	}
-
-	private Rectangle drawBackground(Graphics2D g, Rectangle clip) {
-		Rectangle frame = this.backgroundRegistry.renderBackgrounds(this.backgroundRenderer, g, clip);
-		frame.width -= clip.width;
-		frame.height -= clip.height;
-		return frame;
-	}
-
-	private void drawFreeLandscape(Graphics2D g, Rectangle clip) {
-		this.freeLandscapeRegistry.renderFreeLandscapes(this.freeLandscapeRenderer, g, clip);
-	}
-
-	private void drawLandscape(Graphics2D g, Rectangle clip) {
-		this.landscapeRegistry.renderLandscapes(this.landscapeRenderer, g, clip);
-	}
-
-	private void drawBuildings(Graphics2D g, Rectangle clip) {
-		this.buildingRegistry.renderBuildings(this.buildingRenderer, g, clip);
 	}
 
 	private void drawMapValues(Graphics2D g, Rectangle clip) {
