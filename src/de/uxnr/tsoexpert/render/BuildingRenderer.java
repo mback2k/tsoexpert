@@ -84,15 +84,16 @@ public class BuildingRenderer extends AbstractRenderer {
 			
 			graphics.draw(dst);
 			graphics.drawString("B: "+name, dst.x, dst.y);
-		}
 
-		dst.x = position.getX() - 2;
-		dst.y = position.getY() - 2;
-		dst.width = 4;
-		dst.height = 4;
-		
-		if (clip.intersects(dst)) {
-			graphics.draw(dst);
+			Rectangle dbg = new Rectangle(dst);
+			dbg.x = position.getX() - 2;
+			dbg.y = position.getY() - 2;
+			dbg.width = 4;
+			dbg.height = 4;
+
+			if (clip.intersects(dbg)) {
+				graphics.draw(dbg);
+			}
 		}
 
 		return dst;
