@@ -1,11 +1,19 @@
 package de.uxnr.tsoexpert.model;
 
 public class BackgroundGridPosition extends GridPosition {
+	private final int backgroundGridWidth = 234;
+	private final int backgroundGridHeight = 144;
+	private final int position;
+
 	public BackgroundGridPosition(int position) {
-		this(position, 234, 144);
+		this.position = position;
 	}
 
-	public BackgroundGridPosition(int position, int backgroundGridWith, int backgroundGridHeight) {
-		super((position % 34) * backgroundGridWith, (position / 34) * backgroundGridHeight);
+	public int getX() {
+		return (int) ((this.position % 34) * this.backgroundGridWidth);
+	}
+
+	public int getY() {
+		return (int) ((Math.round(this.position / 34)) * this.backgroundGridHeight);
 	}
 }

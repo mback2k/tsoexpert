@@ -14,7 +14,7 @@ public class Building {
 	}
 
 	public Building(BuildingVO buildingVO) {
-		this(buildingVO.getBuildingName_string(), new IsoGridPosition(buildingVO.getBuildingGrid()), buildingVO.getUpgradeLevel());
+		this(buildingVO.getBuildingName_string(), new IsoGridPosition(buildingVO.getBuildingGrid(), buildingVO.getOffsetX(), buildingVO.getOffsetY()), buildingVO.getUpgradeLevel());
 	}
 
 	public String getName() {

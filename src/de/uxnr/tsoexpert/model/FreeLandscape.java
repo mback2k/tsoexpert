@@ -12,7 +12,7 @@ public class FreeLandscape {
 	}
 
 	public FreeLandscape(FreeLandscapeVO freeLandscapeVO) {
-		this(freeLandscapeVO.getName_string(), new GridPosition(freeLandscapeVO.getX(), freeLandscapeVO.getY()));
+		this(freeLandscapeVO.getName_string(), new FreeGridPosition(freeLandscapeVO.getX(), freeLandscapeVO.getY()));
 	}
 
 	public String getName() {
