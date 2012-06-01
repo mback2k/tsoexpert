@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.game;
+package de.uxnr.tsoexpert.proxy;
 
 import java.io.IOException;
 

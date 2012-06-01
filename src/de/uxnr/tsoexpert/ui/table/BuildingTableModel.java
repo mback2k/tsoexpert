@@ -6,9 +6,9 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import de.uxnr.tsoexpert.game.IDataHandler;
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.game.communication.vo.ZoneVO;
+import de.uxnr.tsoexpert.proxy.IDataHandler;
 
 public class BuildingTableModel extends AbstractTableModel implements IDataHandler<ZoneVO> {
 	private static final long serialVersionUID = -6357460357936381670L;

@@ -27,6 +27,10 @@ public class FileData extends File {
 		}
 	}
 
+	public long length() {
+		return this.bytearr.length;
+	}
+
 	public byte[] getBytes() {
 		return this.bytearr;
 	}

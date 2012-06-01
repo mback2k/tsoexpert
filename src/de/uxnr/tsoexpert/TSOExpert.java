@@ -35,7 +35,7 @@ public class TSOExpert {
 		xmlHandler = new XMLHandler();
 		registry.register(xmlHandler);
 
-		spriteHandler = new SpriteHandler(xmlHandler);
+		spriteHandler = new SpriteHandler();
 		registry.register(spriteHandler);
 
 		staticHandler = new StaticHandler();

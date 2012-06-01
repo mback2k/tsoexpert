@@ -15,6 +15,7 @@ import org.w3c.dom.NodeList;
 
 import de.uxnr.tsoexpert.TSOHandler;
 import de.uxnr.tsoexpert.file.FileData;
+import de.uxnr.tsoexpert.proxy.IResourceHandler;
 
 public class XMLHandler implements TSOHandler, IResourceHandler {
 	private final Map<String, Document> documents = new HashMap<String, Document>();

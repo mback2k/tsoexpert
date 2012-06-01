@@ -11,8 +11,10 @@ import javax.swing.JTabbedPane;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.proxy.GameHandler;
+import de.uxnr.tsoexpert.proxy.StaticHandler;
 import de.uxnr.tsoexpert.ui.tab.BuildingTab;
 import de.uxnr.tsoexpert.ui.tab.DepositTab;
+import de.uxnr.tsoexpert.ui.tab.FileCacheTab;
 import de.uxnr.tsoexpert.ui.tab.ResourceTab;
 import de.uxnr.tsoexpert.ui.tab.ZoneMapTab;
 
@@ -20,10 +22,13 @@ public class MainWindow {
 	private JFrame frame;
 	private JTabbedPane tabbedPane;
 
+	private StatusBar statusBar;
+
 	private ZoneMapTab zoneMapTab;
 	private BuildingTab buildingTab;
 	private ResourceTab resourceTab;
 	private DepositTab depositTab;
+	private FileCacheTab fileCacheTab;
 
 	/**
 	 * Launch the application.
@@ -55,6 +60,7 @@ public class MainWindow {
 	 */
 	public MainWindow() {
 		GameHandler gameHandler = (GameHandler) TSOExpert.getHandler("GameHandler");
+		StaticHandler staticHandler = (StaticHandler) TSOExpert.getHandler("StaticHandler");
 
 		this.initialize();
 
@@ -62,6 +68,7 @@ public class MainWindow {
 		this.buildingTab.bind(gameHandler);
 		this.resourceTab.bind(gameHandler);
 		this.depositTab.bind(gameHandler);
+		this.fileCacheTab.bind(staticHandler);
 	}
 
 	public void show() {
@@ -75,6 +82,9 @@ public class MainWindow {
 		this.frame = new JFrame("TSO Expert");
 		this.frame.setBounds(100, 100, 700, 450);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		this.statusBar = new StatusBar(this.frame);
+		this.frame.add(this.statusBar, BorderLayout.SOUTH);
 
 		this.tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		this.frame.getContentPane().add(this.tabbedPane, BorderLayout.CENTER);
@@ -90,5 +100,8 @@ public class MainWindow {
 
 		this.depositTab = new DepositTab();
 		this.tabbedPane.addTab("Deposits", null, this.depositTab, null);
+
+		this.fileCacheTab = new FileCacheTab();
+		this.tabbedPane.addTab("Files", null, this.fileCacheTab, null);
 	}
 }
