@@ -19,7 +19,7 @@ public class BuildingRenderer extends AbstractRenderer {
 		if (this.nofUpgrades.containsKey(name)) {
 			nofUpgrades = this.nofUpgrades.get(name);
 		} else {
-			nofUpgrades = GameSetting.getNumber(this.getGfxSettings(), "//GameObjects/Buildings/Building[@name='"+name+"']/@nofUpgrades");
+			nofUpgrades = GameSetting.getNumber(this.xmlHandler.getDocument(GameSetting.gfx_settings), "//GameObjects/Buildings/Building[@name='"+name+"']/@nofUpgrades");
 			this.nofUpgrades.put(name, nofUpgrades);
 		}
 		if (nofUpgrades != null) {
