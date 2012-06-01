@@ -13,7 +13,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import sun.misc.BASE64Decoder;
 
-@SuppressWarnings("restriction")
 public class FileDecrypter {
 	public static final String PRIVATE_KEY_FILE = "PRIVATE_KEY";
 
