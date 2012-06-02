@@ -75,4 +75,8 @@ public class Buff {
 		this.recruitingTimePercent = recruitingTimePercent;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 }
