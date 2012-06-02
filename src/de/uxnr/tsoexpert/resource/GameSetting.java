@@ -20,11 +20,11 @@ public class GameSetting {
 	public static final File gfx_settings = new File("res/GFX/gfx_settings.xml");
 
 	private static final Map<String, XPathExpression> expressions = new HashMap<String, XPathExpression>();
-	private static final Map<DocumentExpression, Object> objects = new HashMap<DocumentExpression, Object>();
+	private static final Map<DocumentPath, Object> objects = new HashMap<DocumentPath, Object>();
 
 	public static Node getNode(Document document, String path) {
 		try {
-			return (Node) evaluateExpression(document, XPathConstants.NODE, parseExpression(path));
+			return (Node) evaluateExpression(document, XPathConstants.NODE, path);
 		} catch (XPathExpressionException e) {
 			return null;
 		}
@@ -32,7 +32,7 @@ public class GameSetting {
 
 	public static NodeList getNodes(Document document, String path) {
 		try {
-			return (NodeList) evaluateExpression(document, XPathConstants.NODESET, parseExpression(path));
+			return (NodeList) evaluateExpression(document, XPathConstants.NODESET, path);
 		} catch (XPathExpressionException e) {
 			return null;
 		}
@@ -40,7 +40,7 @@ public class GameSetting {
 
 	public static String getString(Document document, String path) {
 		try {
-			return (String) evaluateExpression(document, XPathConstants.STRING, parseExpression(path));
+			return (String) evaluateExpression(document, XPathConstants.STRING, path);
 		} catch (XPathExpressionException e) {
 			return null;
 		}
@@ -48,7 +48,7 @@ public class GameSetting {
 
 	public static Double getNumber(Document document, String path) {
 		try {
-			return (Double) evaluateExpression(document, XPathConstants.NUMBER, parseExpression(path));
+			return (Double) evaluateExpression(document, XPathConstants.NUMBER, path);
 		} catch (XPathExpressionException e) {
 			return null;
 		}
@@ -56,21 +56,22 @@ public class GameSetting {
 
 	public static Boolean getBoolean(Document document, String path) {
 		try {
-			return (Boolean) evaluateExpression(document, XPathConstants.BOOLEAN, parseExpression(path));
+			return (Boolean) evaluateExpression(document, XPathConstants.BOOLEAN, path);
 		} catch (XPathExpressionException e) {
 			return null;
 		}
 	}
 
-	private static Object evaluateExpression(Document document, QName returnType, XPathExpression expression) throws XPathExpressionException {
-		DocumentExpression documentExpression = new DocumentExpression(document, expression);
+	private static Object evaluateExpression(Document document, QName returnType, String path) throws XPathExpressionException {
+		DocumentPath documentPath = new DocumentPath(document, path);
 
-		if (objects.containsKey(documentExpression))
-			return objects.get(documentExpression);
+		if (objects.containsKey(documentPath))
+			return objects.get(documentPath);
 
-		Object obj = expression.evaluate(document, returnType);
+		XPathExpression expr = parseExpression(path);
+		Object obj = expr.evaluate(document, returnType);
 
-		objects.put(documentExpression, obj);
+		objects.put(documentPath, obj);
 
 		return obj;
 	}
@@ -88,15 +89,15 @@ public class GameSetting {
 		return expr;
 	}
 
-	private static class DocumentExpression {
+	private static class DocumentPath {
 		private final Document document;
-		private final XPathExpression expression;
+		private final String path;
 		private final int hashCode;
 
-		public DocumentExpression(Document document, XPathExpression expression) {
+		public DocumentPath(Document document, String path) {
 			this.document = document;
-			this.expression = expression;
-			this.hashCode = this.document.hashCode() ^ this.expression.hashCode();
+			this.path = path;
+			this.hashCode = this.document.hashCode() ^ this.path.hashCode();
 		}
 
 		public int hashCode() {
