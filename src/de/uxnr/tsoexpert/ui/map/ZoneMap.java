@@ -37,7 +37,7 @@ public class ZoneMap {
 	private BufferedImage doubleBuffer = null;
 	private Rectangle offset = new Rectangle();
 	private Rectangle frame = new Rectangle();
-	private double zoomFactor = 1.0;
+	private int zoomFactor = 50;
 
 	private boolean showBackground = true;
 	private boolean showFreeLandscape = false;
@@ -73,16 +73,32 @@ public class ZoneMap {
 		this.buildingRegistry.addAll(this.zoneVO.getBuildings());
 	}
 
+	public double getZoomFactor() {
+		return (double) (this.zoomFactor / 100.0);
+	}
+
 	public void updateZoomFactor(int count) {
-		double x = (this.offset.x + (this.offset.width / 2)) / this.zoomFactor;
-		double y = (this.offset.y + (this.offset.height / 2)) / this.zoomFactor;
-		if (count > 0 && this.zoomFactor < 1.5) {
-			this.zoomFactor *= 1.1;
-		} else if (count < 0 && this.zoomFactor > 0.5) {
-			this.zoomFactor *= 0.9;
-		}
-		this.offset.x = (int) (x * this.zoomFactor) - (this.offset.width / 2);
-		this.offset.y = (int) (y * this.zoomFactor) - (this.offset.height / 2);
+		double oldZoomFactor = this.getZoomFactor();
+		double offsetX = (this.offset.x + (this.offset.width / 2)) / oldZoomFactor;
+		double offsetY = (this.offset.y + (this.offset.height / 2)) / oldZoomFactor;
+		double frameX = this.frame.x / oldZoomFactor;
+		double frameY = this.frame.y / oldZoomFactor;
+		double frameWidth = (this.frame.width / oldZoomFactor) + Math.ceil(this.offset.width / oldZoomFactor);
+		double frameHeight = (this.frame.height / oldZoomFactor) + Math.ceil(this.offset.height / oldZoomFactor);
+		this.zoomFactor += 10 * count;
+		this.zoomFactor = Math.max(this.zoomFactor, 20);
+		this.zoomFactor = Math.min(this.zoomFactor, 100);
+		double newZoomFactor = this.getZoomFactor();
+		this.frame.x = (int) (frameX * newZoomFactor);
+		this.frame.y = (int) (frameY * newZoomFactor);
+		this.frame.width = (int) ((frameWidth - Math.ceil(this.offset.width / newZoomFactor)) * newZoomFactor);
+		this.frame.height = (int) ((frameHeight - Math.ceil(this.offset.height / newZoomFactor)) * newZoomFactor);
+		this.offset.x = (int) (offsetX * newZoomFactor) - (this.offset.width / 2);
+		this.offset.y = (int) (offsetY * newZoomFactor) - (this.offset.height / 2);
+		this.offset.x = Math.max(this.offset.x, this.frame.x);
+		this.offset.y = Math.max(this.offset.y, this.frame.y);
+		this.offset.x = Math.min(this.offset.x, this.frame.width);
+		this.offset.y = Math.min(this.offset.y, this.frame.height);
 	}
 
 	public void updateOffsetX(int offsetX) {
@@ -164,6 +180,8 @@ public class ZoneMap {
 			this.offset.height = this.doubleBuffer.getHeight(null);
 		}
 
+		double zoomFactor = this.getZoomFactor();
+
 		Rectangle clip = new Rectangle(this.offset);
 		Graphics2D g = this.doubleBuffer.createGraphics();
 
@@ -173,21 +191,21 @@ public class ZoneMap {
 		g.setFont(graphics.getFont());
 		g.fillRect(0, 0, size.width, size.height);
 		g.translate(clip.x*-1, clip.y*-1);
-		g.scale(this.zoomFactor, this.zoomFactor);
+		g.scale(zoomFactor, zoomFactor);
 
-		clip.x = (int) Math.floor(clip.x/this.zoomFactor);
-		clip.y = (int) Math.floor(clip.y/this.zoomFactor);
-		clip.width = (int) Math.ceil(clip.width/this.zoomFactor);
-		clip.height = (int) Math.ceil(clip.height/this.zoomFactor);
+		clip.x = (int) Math.floor(clip.x / zoomFactor);
+		clip.y = (int) Math.floor(clip.y / zoomFactor);
+		clip.width = (int) Math.ceil(clip.width / zoomFactor);
+		clip.height = (int) Math.ceil(clip.height / zoomFactor);
 
 		if (this.showBackground || this.debugBackground) {
 			this.frame = this.backgroundRegistry.renderBackgrounds(this.backgroundRenderer, g, clip);
 			this.frame.width -= clip.width;
 			this.frame.height -= clip.height;
-			this.frame.x *= this.zoomFactor;
-			this.frame.y *= this.zoomFactor;
-			this.frame.width *= this.zoomFactor;
-			this.frame.height *= this.zoomFactor;
+			this.frame.x *= zoomFactor;
+			this.frame.y *= zoomFactor;
+			this.frame.width *= zoomFactor;
+			this.frame.height *= zoomFactor;
 			this.offset.x = Math.max(this.offset.x, this.frame.x);
 			this.offset.y = Math.max(this.offset.y, this.frame.y);
 			this.offset.x = Math.min(this.offset.x, this.frame.width);
