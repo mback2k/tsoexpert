@@ -4,7 +4,9 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Building {
+import org.w3c.dom.Node;
+
+public class Building implements Parsable {
 
 	private static Map<String, Building> BuildingMap = new HashMap<String, Building>();
 
@@ -110,6 +112,12 @@ public class Building {
 
 	public void setBlocks(Map<Point, BlockingTyp> blocks) {
 		this.blocks = blocks;
+	}
+
+	@Override
+	public void parse(Node node) throws InvalidGameSettingsException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
