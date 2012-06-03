@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class Resource implements Parsable {
 
@@ -20,13 +22,28 @@ public class Resource implements Parsable {
 		this.name = name2;
 		ResourceMap.put(this.name, this);
 	}
+	
+	public static void parseAll(Node resourceDefinitions) throws InvalidGameSettingsException {
+		NodeList childNodes = resourceDefinitions.getChildNodes();
+		for (int x = 0; x < childNodes.getLength(); x++) {
+			Node node = childNodes.item(x);
+			if (node.getNodeName().equalsIgnoreCase("ResourceDefinition")) {
+				NamedNodeMap attributes = node.getAttributes();
+				String name = null;
+				for (int y = 0; y < attributes.getLength(); y++) {
+					Node attribute = attributes.item(y);
+					if (attribute.getNodeName().equalsIgnoreCase("name")) {
+						name = attribute.getNodeValue();
+					}
+				}
+				Resource r = new Resource (name);
+				r.parse(node);
+			}
+		}
+	}
 
 	public static Resource getByName(String name) {
-		Resource r = ResourceMap.get(name);
-		if (r == null) {
-			r = new Resource(name);
-		}
-		return r;
+		return ResourceMap.get(name);
 	}
 
 	public String getName() {
@@ -71,7 +88,14 @@ public class Resource implements Parsable {
 
 	@Override
 	public void parse(Node node) {
-		// TODO Auto-generated method stub
+		NamedNodeMap attributes = node.getAttributes();
+		for (int y = 0; y < attributes.getLength(); y++) {
+			Node attribute = attributes.item(y);
+			if (attribute.getNodeName().equalsIgnoreCase("MaxLimit")) {
+				this.maxLimit = Integer.parseInt(attribute.getNodeValue());
+			}
+		}
+		
 
 	}
 

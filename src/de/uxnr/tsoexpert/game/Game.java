@@ -23,6 +23,8 @@ public class Game {
 	public static Game parse(Document d) throws InvalidGameSettingsException {
 		Game game = new Game();
 		parseResources(d, game);
+		
+		System.out.print(Resource.getByName("Population").getMaxLimit());
 
 		return null;
 	}
@@ -30,22 +32,7 @@ public class Game {
 	private static void parseResources(Document d, Game game) throws InvalidGameSettingsException {
 		NodeList resourceDefinitions = d.getElementsByTagName("ResourceDefinitions");
 		if (resourceDefinitions.getLength() == 1) {
-			NodeList childNodes = resourceDefinitions.item(0).getChildNodes();
-			for (int x = 0; x < childNodes.getLength(); x++) {
-				Node node = childNodes.item(x);
-				if (node.getNodeName().equalsIgnoreCase("ResourceDefinition")) {
-					NamedNodeMap attributes = node.getAttributes();
-					String name = null;
-					for (int y = 0; y < attributes.getLength(); y++) {
-						Node attribute = attributes.item(y);
-						if (attribute.getNodeName().equalsIgnoreCase("name")) {
-							name = attribute.getNodeValue();
-						}
-					}
-					Resource r = Resource.getByName(name);
-					r.parse(node);
-				}
-			}
+			Resource.parseAll(resourceDefinitions.item(0));
 		} else {
 			throw new InvalidGameSettingsException("No ResourceDefinitions present");
 		}
