@@ -51,7 +51,7 @@ public class LimitExpansion implements Parsable {
 		this.building = b;
 		this.amount = amount;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Limit expanded by ");

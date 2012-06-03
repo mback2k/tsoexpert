@@ -20,12 +20,13 @@ public class Resource implements Parsable {
 
 	private Resource(String name2) {
 		this.name = name2;
-		creator = new Vector<Creation> ();
+		creator = new Vector<Creation>();
 		limitExpansions = new Vector<LimitExpansion>();
 		ResourceMap.put(this.name, this);
 	}
-	
-	public static void parseAll(Node resourceDefinitions) throws InvalidGameSettingsException {
+
+	public static void parseAll(Node resourceDefinitions)
+			throws InvalidGameSettingsException {
 		NodeList childNodes = resourceDefinitions.getChildNodes();
 		for (int x = 0; x < childNodes.getLength(); x++) {
 			Node node = childNodes.item(x);
@@ -38,7 +39,7 @@ public class Resource implements Parsable {
 						name = attribute.getNodeValue();
 					}
 				}
-				Resource r = new Resource (name);
+				Resource r = new Resource(name);
 				r.parse(node);
 			}
 		}
@@ -100,34 +101,28 @@ public class Resource implements Parsable {
 		NodeList childNodes = node.getChildNodes();
 		for (int x = 0; x < childNodes.getLength(); x++) {
 			Node child = childNodes.item(x);
-			if (child.getNodeName().equalsIgnoreCase("Creation"))
-			{
+			if (child.getNodeName().equalsIgnoreCase("Creation")) {
 				Creation c = null;
-				for (int y = 0; y < child.getAttributes().getLength(); y ++)
-				{
+				for (int y = 0; y < child.getAttributes().getLength(); y++) {
 					Node attribute = child.getAttributes().item(y);
-					if (attribute.getNodeName().equalsIgnoreCase("CreationId"))
-					{
-						c = Creation.getById(Integer.parseInt(attribute.getNodeValue()));
+					if (attribute.getNodeName().equalsIgnoreCase("CreationId")) {
+						c = Creation.getById(Integer.parseInt(attribute
+								.getNodeValue()));
 					}
 				}
-				if (c == null)
-				{
-					throw new InvalidGameSettingsException ("Invalid Creation Definition.");
-				}
-				else
-				{
+				if (c == null) {
+					throw new InvalidGameSettingsException(
+							"Invalid Creation Definition.");
+				} else {
 					this.creator.add(c);
 					c.parse(child);
 				}
-			}
-			else if (child.getNodeName().equalsIgnoreCase("ExpandMaxLimit")){
-				LimitExpansion lm = new LimitExpansion ();
+			} else if (child.getNodeName().equalsIgnoreCase("ExpandMaxLimit")) {
+				LimitExpansion lm = new LimitExpansion();
 				lm.parse(child);
 				this.limitExpansions.add(lm);
 			}
 		}
-		
 
 	}
 
