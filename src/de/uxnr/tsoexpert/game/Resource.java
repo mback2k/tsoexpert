@@ -87,12 +87,32 @@ public class Resource implements Parsable {
 	}
 
 	@Override
-	public void parse(Node node) {
+	public void parse(Node node) throws InvalidGameSettingsException {
 		NamedNodeMap attributes = node.getAttributes();
-		for (int y = 0; y < attributes.getLength(); y++) {
-			Node attribute = attributes.item(y);
+		for (int x = 0; x < attributes.getLength(); x++) {
+			Node attribute = attributes.item(x);
 			if (attribute.getNodeName().equalsIgnoreCase("MaxLimit")) {
 				this.maxLimit = Integer.parseInt(attribute.getNodeValue());
+			}
+		}
+		NodeList childNodes = node.getChildNodes();
+		for (int x = 0; x < childNodes.getLength(); x++) {
+			Node child = childNodes.item(x);
+			if (child.getNodeName().equalsIgnoreCase("Creation"))
+			{
+				Creation c = null;
+				for (int y = 0; y < child.getAttributes().getLength(); y ++)
+				{
+					Node attribute = child.getAttributes().item(y);
+					if (attribute.getNodeName().equalsIgnoreCase("CreationId"))
+					{
+						c = Creation.getById(Integer.parseInt(attribute.getNodeValue()));
+					}
+				}
+				if (c == null)
+				{
+					throw new InvalidGameSettingsException ("Invalid Creationdefinition.");
+				}
 			}
 		}
 		
