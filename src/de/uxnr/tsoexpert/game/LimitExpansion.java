@@ -1,6 +1,8 @@
 package de.uxnr.tsoexpert.game;
 
-public class LimitExpansion {
+import org.w3c.dom.Node;
+
+public class LimitExpansion implements Parsable{
 	private Building building;
 	private int amount;
 
@@ -23,5 +25,11 @@ public class LimitExpansion {
 
 	public void setAmount(int amount) {
 		this.amount = amount;
+	}
+
+	@Override
+	public void parse(Node node) throws InvalidGameSettingsException {
+		// TODO Auto-generated method stub
+		
 	}
 }
