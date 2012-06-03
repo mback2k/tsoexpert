@@ -1,3 +1,5 @@
 PRIVATE_KEY
 bin/
 res/
+
+*.amf
