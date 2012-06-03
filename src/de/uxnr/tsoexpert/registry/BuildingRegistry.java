@@ -8,11 +8,11 @@ import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.model.Building;
-import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
+import de.uxnr.tsoexpert.model.grid.BuildingGridPosition;
 import de.uxnr.tsoexpert.render.BuildingRenderer;
 
 public class BuildingRegistry {
-	private final Map<IsoGridPosition, Building> buildings = new TreeMap<IsoGridPosition, Building>();
+	private final Map<BuildingGridPosition, Building> buildings = new TreeMap<BuildingGridPosition, Building>();
 
 	public void add(BuildingVO buildingVO) {
 		Building building = new Building(buildingVO);
