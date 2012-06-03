@@ -23,18 +23,28 @@ public class Game {
 	public static Game parse(Document d) throws InvalidGameSettingsException {
 		Game game = new Game();
 		parseResources(d, game);
-		
-		System.out.print(Resource.getByName("Population").getMaxLimit());
+		Resource r = Resource.getByName("Titanium");
+
+		System.out.println(r.getMaxLimit());
+		for (Creation c : r.getCreator()) {
+			System.out.println(c);
+		}
+		for (LimitExpansion lm : r.getLimitExpansions()) {
+			System.out.println(lm);
+		}
 
 		return null;
 	}
 
-	private static void parseResources(Document d, Game game) throws InvalidGameSettingsException {
-		NodeList resourceDefinitions = d.getElementsByTagName("ResourceDefinitions");
+	private static void parseResources(Document d, Game game)
+			throws InvalidGameSettingsException {
+		NodeList resourceDefinitions = d
+				.getElementsByTagName("ResourceDefinitions");
 		if (resourceDefinitions.getLength() == 1) {
 			Resource.parseAll(resourceDefinitions.item(0));
 		} else {
-			throw new InvalidGameSettingsException("No ResourceDefinitions present");
+			throw new InvalidGameSettingsException(
+					"No ResourceDefinitions present");
 		}
 	}
 
