@@ -20,6 +20,8 @@ public class Resource implements Parsable {
 
 	private Resource(String name2) {
 		this.name = name2;
+		creator = new Vector<Creation> ();
+		limitExpansions = new Vector<LimitExpansion>();
 		ResourceMap.put(this.name, this);
 	}
 	
@@ -111,8 +113,18 @@ public class Resource implements Parsable {
 				}
 				if (c == null)
 				{
-					throw new InvalidGameSettingsException ("Invalid Creationdefinition.");
+					throw new InvalidGameSettingsException ("Invalid Creation Definition.");
 				}
+				else
+				{
+					this.creator.add(c);
+					c.parse(child);
+				}
+			}
+			else if (child.getNodeName().equalsIgnoreCase("ExpandMaxLimit")){
+				LimitExpansion lm = new LimitExpansion ();
+				lm.parse(child);
+				this.limitExpansions.add(lm);
 			}
 		}
 		
