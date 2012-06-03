@@ -12,6 +12,18 @@ import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class BackgroundRenderer extends AbstractRenderer {
+	private static BackgroundRenderer instance;
+
+	private BackgroundRenderer() {
+	}
+
+	public static BackgroundRenderer getInstance() {
+		if (BackgroundRenderer.instance == null) {
+			BackgroundRenderer.instance = new BackgroundRenderer();
+		}
+		return BackgroundRenderer.instance;
+	}
+
 	private final Map<Background, Sprite> sprites = new HashMap<Background, Sprite>();
 
 	private Sprite getSprite(final Background background) {

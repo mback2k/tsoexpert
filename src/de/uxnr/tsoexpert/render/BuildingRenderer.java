@@ -13,6 +13,18 @@ import de.uxnr.tsoexpert.resource.GameSetting;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class BuildingRenderer extends AbstractRenderer {
+	private static BuildingRenderer instance;
+
+	private BuildingRenderer() {
+	}
+
+	public static BuildingRenderer getInstance() {
+		if (BuildingRenderer.instance == null) {
+			BuildingRenderer.instance = new BuildingRenderer();
+		}
+		return BuildingRenderer.instance;
+	}
+
 	private final Map<String, Double> nofUpgrades = new HashMap<String, Double>();
 	private final Map<Building, Sprite> sprites = new HashMap<Building, Sprite>();
 

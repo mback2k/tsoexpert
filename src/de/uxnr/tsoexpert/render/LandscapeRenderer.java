@@ -12,6 +12,18 @@ import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class LandscapeRenderer extends AbstractRenderer {
+	private static LandscapeRenderer instance;
+
+	private LandscapeRenderer() {
+	}
+
+	public static LandscapeRenderer getInstance() {
+		if (LandscapeRenderer.instance == null) {
+			LandscapeRenderer.instance = new LandscapeRenderer();
+		}
+		return LandscapeRenderer.instance;
+	}
+
 	private final Map<Landscape, Sprite> sprites = new HashMap<Landscape, Sprite>();
 
 	private Sprite getSprite(final Landscape landscape) {

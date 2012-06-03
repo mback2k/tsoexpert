@@ -1,7 +1,5 @@
 package de.uxnr.tsoexpert.registry;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,9 +7,20 @@ import java.util.TreeMap;
 import de.uxnr.tsoexpert.game.communication.vo.LandscapeVO;
 import de.uxnr.tsoexpert.model.Landscape;
 import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
-import de.uxnr.tsoexpert.render.LandscapeRenderer;
 
 public class LandscapeRegistry {
+	private static LandscapeRegistry instance;
+
+	private LandscapeRegistry() {
+	}
+
+	public static LandscapeRegistry getInstance() {
+		if (LandscapeRegistry.instance == null) {
+			LandscapeRegistry.instance = new LandscapeRegistry();
+		}
+		return LandscapeRegistry.instance;
+	}
+
 	private final Map<IsoGridPosition, Landscape> landscapes = new TreeMap<IsoGridPosition, Landscape>();
 
 	public void add(LandscapeVO landscapeVO) {
@@ -36,17 +45,7 @@ public class LandscapeRegistry {
 		}
 	}
 
-	public Rectangle renderLandscapes(LandscapeRenderer landscapeRenderer, Graphics2D graphics, Rectangle clip) {
-		Rectangle frame = new Rectangle();
-		for (Landscape landscape : this.landscapes.values()) {
-			Rectangle sprite = landscapeRenderer.renderLandscape(landscape, graphics, clip);
-			if (sprite != null) {
-				frame.x = Math.min(frame.x, sprite.x);
-				frame.y = Math.min(frame.y, sprite.y);
-				frame.width = Math.max(frame.width, sprite.x + sprite.width);
-				frame.height =  Math.max(frame.height, sprite.y + sprite.height);
-			}
-		}
-		return frame;
+	public Map<IsoGridPosition, Landscape> getAll() {
+		return this.landscapes;
 	}
 }

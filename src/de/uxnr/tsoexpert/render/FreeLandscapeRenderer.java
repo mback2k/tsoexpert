@@ -12,6 +12,18 @@ import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class FreeLandscapeRenderer extends AbstractRenderer {
+	private static FreeLandscapeRenderer instance;
+
+	private FreeLandscapeRenderer() {
+	}
+
+	public static FreeLandscapeRenderer getInstance() {
+		if (FreeLandscapeRenderer.instance == null) {
+			FreeLandscapeRenderer.instance = new FreeLandscapeRenderer();
+		}
+		return FreeLandscapeRenderer.instance;
+	}
+
 	private final Map<FreeLandscape, Sprite> sprites = new HashMap<FreeLandscape, Sprite>();
 
 	private Sprite getSprite(final FreeLandscape freeLandscape) {

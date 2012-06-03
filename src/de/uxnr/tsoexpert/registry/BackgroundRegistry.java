@@ -1,7 +1,5 @@
 package de.uxnr.tsoexpert.registry;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,9 +7,20 @@ import java.util.TreeMap;
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
 import de.uxnr.tsoexpert.model.Background;
 import de.uxnr.tsoexpert.model.grid.BackgroundGridPosition;
-import de.uxnr.tsoexpert.render.BackgroundRenderer;
 
 public class BackgroundRegistry {
+	private static BackgroundRegistry instance;
+
+	private BackgroundRegistry() {
+	}
+
+	public static BackgroundRegistry getInstance() {
+		if (BackgroundRegistry.instance == null) {
+			BackgroundRegistry.instance = new BackgroundRegistry();
+		}
+		return BackgroundRegistry.instance;
+	}
+
 	private final Map<BackgroundGridPosition, Background> backgrounds = new TreeMap<BackgroundGridPosition, Background>();
 
 	public void add(BackgroundTileVO backgroundTileVO, int index) {
@@ -37,17 +46,7 @@ public class BackgroundRegistry {
 		}
 	}
 
-	public Rectangle renderBackgrounds(BackgroundRenderer backgroundRenderer, Graphics2D graphics, Rectangle clip) {
-		Rectangle frame = new Rectangle();
-		for (Background background : this.backgrounds.values()) {
-			Rectangle sprite = backgroundRenderer.renderBackground(background, graphics, clip);
-			if (sprite != null) {
-				frame.x = Math.min(frame.x, sprite.x);
-				frame.y = Math.min(frame.y, sprite.y);
-				frame.width = Math.max(frame.width, sprite.x + sprite.width);
-				frame.height =  Math.max(frame.height, sprite.y + sprite.height);
-			}
-		}
-		return frame;
+	public Map<BackgroundGridPosition, Background> getAll() {
+		return this.backgrounds;
 	}
 }
