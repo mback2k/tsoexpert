@@ -13,6 +13,7 @@ public class Creation implements Parsable{
 	private final int id;
 	private float time;
 	private Resource externalResource;
+	private Building building;
 
 	private Creation(int id) {
 		this.id = id;
@@ -31,5 +32,22 @@ public class Creation implements Parsable{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.id);
+		sb.append(" - ");
+//		sb.append(this.typ.toString());
+//		sb.append(" by ");
+//		sb.append(this.building.toString());
+//		sb.append(" with ");
+//		sb.append(externalResource);
+//		sb.append(" within ");
+//		sb.append(time);
+//		sb.append(" seconds");
+		
+		return sb.toString();
+	}
+
 
 }
