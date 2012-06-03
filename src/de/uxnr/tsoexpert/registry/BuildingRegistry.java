@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
 import de.uxnr.tsoexpert.model.Building;
-import de.uxnr.tsoexpert.model.IsoGridPosition;
+import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
 import de.uxnr.tsoexpert.render.BuildingRenderer;
 
 public class BuildingRegistry {

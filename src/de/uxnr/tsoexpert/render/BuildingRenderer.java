@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.uxnr.tsoexpert.model.Building;
-import de.uxnr.tsoexpert.model.GridPosition;
+import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.resource.GameSetting;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 

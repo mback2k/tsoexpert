@@ -1,6 +1,8 @@
 package de.uxnr.tsoexpert.model;
 
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
+import de.uxnr.tsoexpert.model.grid.FreeGridPosition;
+import de.uxnr.tsoexpert.model.grid.GridPosition;
 
 public class FreeLandscape {
 	private String name;

@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
 import de.uxnr.tsoexpert.model.Background;
-import de.uxnr.tsoexpert.model.BackgroundGridPosition;
+import de.uxnr.tsoexpert.model.grid.BackgroundGridPosition;
 import de.uxnr.tsoexpert.render.BackgroundRenderer;
 
 public class BackgroundRegistry {

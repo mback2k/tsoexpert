@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.model;
+package de.uxnr.tsoexpert.model.grid;
 
 import de.uxnr.tsoexpert.TSOExpert;
 import de.uxnr.tsoexpert.resource.GameSetting;

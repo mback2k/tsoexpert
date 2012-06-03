@@ -1,6 +1,7 @@
 package de.uxnr.tsoexpert.model;
 
 import de.uxnr.tsoexpert.game.communication.vo.BackgroundTileVO;
+import de.uxnr.tsoexpert.model.grid.BackgroundGridPosition;
 
 public class Background {
 	private String name;

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.LandscapeVO;
-import de.uxnr.tsoexpert.model.IsoGridPosition;
 import de.uxnr.tsoexpert.model.Landscape;
+import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
 import de.uxnr.tsoexpert.render.LandscapeRenderer;
 
 public class LandscapeRegistry {

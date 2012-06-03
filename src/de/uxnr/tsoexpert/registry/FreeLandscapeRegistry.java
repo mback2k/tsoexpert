@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
 import de.uxnr.tsoexpert.model.FreeLandscape;
-import de.uxnr.tsoexpert.model.GridPosition;
+import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.render.FreeLandscapeRenderer;
 
 public class FreeLandscapeRegistry {

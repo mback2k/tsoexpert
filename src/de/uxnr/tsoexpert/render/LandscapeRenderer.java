@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.uxnr.tsoexpert.model.GridPosition;
 import de.uxnr.tsoexpert.model.Landscape;
+import de.uxnr.tsoexpert.model.grid.GridPosition;
 import de.uxnr.tsoexpert.resource.ISpriteHandler;
 
 public class LandscapeRenderer extends AbstractRenderer {

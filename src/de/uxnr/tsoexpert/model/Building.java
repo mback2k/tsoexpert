@@ -1,6 +1,7 @@
 package de.uxnr.tsoexpert.model;
 
 import de.uxnr.tsoexpert.game.communication.vo.BuildingVO;
+import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
 
 public class Building {
 	private String name;

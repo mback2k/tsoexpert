@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.model;
+package de.uxnr.tsoexpert.model.grid;
 
 public class FreeGridPosition extends GridPosition {
 	private final int x;
