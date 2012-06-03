@@ -119,5 +119,11 @@ public class Building implements Parsable {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.name.toString());
+		return sb.toString();
+	}
 
 }
