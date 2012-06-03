@@ -2,13 +2,12 @@ package de.uxnr.tsoexpert.model;
 
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
 import de.uxnr.tsoexpert.model.grid.FreeGridPosition;
-import de.uxnr.tsoexpert.model.grid.GridPosition;
 
 public class FreeLandscape {
 	private String name;
-	private GridPosition position;
+	private FreeGridPosition position;
 
-	public FreeLandscape(String name, GridPosition position) {
+	public FreeLandscape(String name, FreeGridPosition position) {
 		this.name = name;
 		this.position = position;
 	}
@@ -21,7 +20,7 @@ public class FreeLandscape {
 		return this.name;
 	}
 
-	public GridPosition getPosition() {
+	public FreeGridPosition getPosition() {
 		return this.position;
 	}
 

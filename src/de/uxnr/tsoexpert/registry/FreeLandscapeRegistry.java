@@ -8,11 +8,11 @@ import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
 import de.uxnr.tsoexpert.model.FreeLandscape;
-import de.uxnr.tsoexpert.model.grid.GridPosition;
+import de.uxnr.tsoexpert.model.grid.FreeGridPosition;
 import de.uxnr.tsoexpert.render.FreeLandscapeRenderer;
 
 public class FreeLandscapeRegistry {
-	private final Map<GridPosition, FreeLandscape> freeLandscapes = new TreeMap<GridPosition, FreeLandscape>();
+	private final Map<FreeGridPosition, FreeLandscape> freeLandscapes = new TreeMap<FreeGridPosition, FreeLandscape>();
 
 	public void add(FreeLandscapeVO freeLandscapeVO) {
 		FreeLandscape freeLandscape = new FreeLandscape(freeLandscapeVO);
