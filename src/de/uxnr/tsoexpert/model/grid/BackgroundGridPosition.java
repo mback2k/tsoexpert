@@ -22,6 +22,10 @@ public class BackgroundGridPosition extends GridPosition {
 		return (int) ((Math.round(this.position / 34)) * BackgroundGridPosition.getBackgroundGridHeight());
 	}
 
+	public Layer getLayer() {
+		return Layer.BACKGROUND;
+	}
+
 	protected static synchronized int getBackgroundGridWidth() {
 		if (BackgroundGridPosition.backgroundGridWidth == null) {
 			BackgroundGridPosition.backgroundGridWidth = GameSetting.getNumber(((XMLHandler) TSOExpert.getHandler("XMLHandler")).getDocument(GameSetting.gfx_settings), "//Globals/BackgroundGrid/@w").intValue();

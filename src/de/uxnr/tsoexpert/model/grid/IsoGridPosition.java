@@ -30,6 +30,10 @@ public class IsoGridPosition extends GridPosition {
 		return (int) ((Math.floor(this.position / 64) + 1) * (IsoGridPosition.getIsoGridHeight() / 2)) + this.offsetY;
 	}
 
+	public Layer getLayer() {
+		return Layer.LANDSCAPE;
+	}
+
 	protected static synchronized int getIsoGridWidth() {
 		if (IsoGridPosition.isoGridWidth == null) {
 			IsoGridPosition.isoGridWidth = GameSetting.getNumber(((XMLHandler) TSOExpert.getHandler("XMLHandler")).getDocument(GameSetting.gfx_settings), "//Globals/IsoGrid/@w").intValue();

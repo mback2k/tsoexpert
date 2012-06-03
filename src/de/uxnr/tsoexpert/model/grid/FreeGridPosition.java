@@ -16,4 +16,8 @@ public class FreeGridPosition extends GridPosition {
 	public int getY() {
 		return this.y;
 	}
+
+	public Layer getLayer() {
+		return Layer.LANDSCAPE;
+	}
 }
