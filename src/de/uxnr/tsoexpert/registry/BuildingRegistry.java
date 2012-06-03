@@ -26,23 +26,19 @@ public class BuildingRegistry {
 	public void add(BuildingVO buildingVO) {
 		Building building = new Building(buildingVO);
 		this.buildings.put(building.getPosition(), building); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().add(building.getPosition(), building);
 	}
 
 	public void addAll(Collection<BuildingVO> buildingVOs) {
 		for (BuildingVO buildingVO : buildingVOs) {
-			this.add(buildingVO); // TODO: Fire event
+			this.add(buildingVO);
 		}
 	}
 
 	public void remove(BuildingVO buildingVO) {
 		Building building = new Building(buildingVO);
-		this.buildings.remove(building); // TODO: Fire event
-	}
-
-	public void clear() {
-		for (Building building : this.buildings.values()) {
-			this.buildings.remove(building); // TODO: Fire event
-		}
+		this.buildings.remove(building.getPosition()); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().remove(building.getPosition());
 	}
 
 	public Map<BuildingGridPosition, Building> getAll() {

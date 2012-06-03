@@ -26,23 +26,19 @@ public class FreeLandscapeRegistry {
 	public void add(FreeLandscapeVO freeLandscapeVO) {
 		FreeLandscape freeLandscape = new FreeLandscape(freeLandscapeVO);
 		this.freeLandscapes.put(freeLandscape.getPosition(), freeLandscape); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().add(freeLandscape.getPosition(), freeLandscape);
 	}
 
 	public void addAll(Collection<FreeLandscapeVO> freeLandscapeVOs) {
 		for (FreeLandscapeVO freeLandscapeVO : freeLandscapeVOs) {
-			this.add(freeLandscapeVO); // TODO: Fire event
+			this.add(freeLandscapeVO);
 		}
 	}
 
 	public void remove(FreeLandscapeVO freeLandscapeVO) {
 		FreeLandscape freeLandscape = new FreeLandscape(freeLandscapeVO);
-		this.freeLandscapes.remove(freeLandscape); // TODO: Fire event
-	}
-
-	public void clear() {
-		for (FreeLandscape freeLandscape : this.freeLandscapes.values()) {
-			this.freeLandscapes.remove(freeLandscape); // TODO: Fire event
-		}
+		this.freeLandscapes.remove(freeLandscape.getPosition()); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().remove(freeLandscape.getPosition());
 	}
 
 	public Map<FreeGridPosition, FreeLandscape> getAll() {

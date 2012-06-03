@@ -4,30 +4,17 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.model.Background;
 import de.uxnr.tsoexpert.model.Building;
 import de.uxnr.tsoexpert.model.FreeLandscape;
 import de.uxnr.tsoexpert.model.Landscape;
 import de.uxnr.tsoexpert.model.grid.GridPosition;
-import de.uxnr.tsoexpert.registry.BackgroundRegistry;
-import de.uxnr.tsoexpert.registry.BuildingRegistry;
-import de.uxnr.tsoexpert.registry.FreeLandscapeRegistry;
-import de.uxnr.tsoexpert.registry.LandscapeRegistry;
+import de.uxnr.tsoexpert.registry.ZoneObjectRegistry;
 
 public class ZoneRenderer {
 	public Rectangle renderZone(Graphics2D graphics, Rectangle clip) {
-		BackgroundRegistry backgroundRegistry = BackgroundRegistry.getInstance();
-		FreeLandscapeRegistry freeLandscapeRegistry = FreeLandscapeRegistry.getInstance();
-		LandscapeRegistry landscapeRegistry = LandscapeRegistry.getInstance();
-		BuildingRegistry buildingRegistry = BuildingRegistry.getInstance();
-
-		Map<GridPosition, Object> objects = new TreeMap<GridPosition, Object>();
-		objects.putAll(backgroundRegistry.getAll());
-		objects.putAll(freeLandscapeRegistry.getAll());
-		objects.putAll(landscapeRegistry.getAll());
-		objects.putAll(buildingRegistry.getAll());
+		Map<GridPosition, Object> objects = ZoneObjectRegistry.getInstance().getAll();
 
 		BackgroundRenderer backgroundRenderer = BackgroundRenderer.getInstance();
 		FreeLandscapeRenderer freeLandscapeRenderer = FreeLandscapeRenderer.getInstance();

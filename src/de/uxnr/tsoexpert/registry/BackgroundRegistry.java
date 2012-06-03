@@ -26,24 +26,20 @@ public class BackgroundRegistry {
 	public void add(BackgroundTileVO backgroundTileVO, int index) {
 		Background background = new Background(backgroundTileVO, index);
 		this.backgrounds.put(background.getPosition(), background); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().add(background.getPosition(), background);
 	}
 
 	public void addAll(Collection<BackgroundTileVO> backgroundTileVOs) {
 		int index = 0;
 		for (BackgroundTileVO backgroundTileVO : backgroundTileVOs) {
-			this.add(backgroundTileVO, index++); // TODO: Fire event
+			this.add(backgroundTileVO, index++);
 		}
 	}
 
 	public void remove(BackgroundTileVO backgroundTileVO, int index) {
 		Background background = new Background(backgroundTileVO, index);
-		this.backgrounds.remove(background); // TODO: Fire event
-	}
-
-	public void clear() {
-		for (Background background : this.backgrounds.values()) {
-			this.backgrounds.remove(background); // TODO: Fire event
-		}
+		this.backgrounds.remove(background.getPosition()); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().remove(background.getPosition());
 	}
 
 	public Map<BackgroundGridPosition, Background> getAll() {
