@@ -1,6 +1,7 @@
 package de.uxnr.tsoexpert.model;
 
 import de.uxnr.tsoexpert.game.communication.vo.LandscapeVO;
+import de.uxnr.tsoexpert.model.grid.IsoGridPosition;
 
 public class Landscape {
 	private String name;

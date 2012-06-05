@@ -1,4 +1,4 @@
-package de.uxnr.tsoexpert.model;
+package de.uxnr.tsoexpert.model.grid;
 
 public class FreeGridPosition extends GridPosition {
 	private final int x;
@@ -15,5 +15,9 @@ public class FreeGridPosition extends GridPosition {
 
 	public int getY() {
 		return this.y;
+	}
+
+	public Layer getLayer() {
+		return Layer.LANDSCAPE;
 	}
 }

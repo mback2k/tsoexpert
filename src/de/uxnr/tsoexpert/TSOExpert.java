@@ -17,33 +17,27 @@ import de.uxnr.tsoexpert.ui.MainWindow;
 public class TSOExpert {
 	private static TSORegistry registry = new TSORegistry();
 
-	private static GameHandler gameHandler;
-	private static StaticHandler staticHandler;
-	private static XMLHandler xmlHandler;
-	private static SpriteHandler spriteHandler;
-	private static ChatHandler chatHandler;
-
 	private static Proxy proxy;
 	private static Thread proxyThread;
 
 	private static MainWindow window;
 
 	public static void launchProxy() throws IOException {
-		gameHandler = new GameHandler();
+		GameHandler gameHandler = new GameHandler();
 		registry.register(gameHandler);
 
-		xmlHandler = new XMLHandler();
+		XMLHandler xmlHandler = new XMLHandler();
 		registry.register(xmlHandler);
 
-		spriteHandler = new SpriteHandler();
+		SpriteHandler spriteHandler = new SpriteHandler();
 		registry.register(spriteHandler);
 
-		staticHandler = new StaticHandler();
+		StaticHandler staticHandler = new StaticHandler();
 		staticHandler.addResourceHandler(".*\\.xml", xmlHandler);
 		staticHandler.addResourceHandler(".*\\.(png|jpg|gif|bin)", spriteHandler);
 		registry.register(staticHandler);
 
-		chatHandler = new ChatHandler();
+		ChatHandler chatHandler = new ChatHandler();
 
 		proxy = new Proxy(8000);
 		proxy.addHostHandler("(\\w*)\\.diesiedleronline\\.de", gameHandler);

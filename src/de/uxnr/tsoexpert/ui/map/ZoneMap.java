@@ -24,10 +24,13 @@ import de.uxnr.tsoexpert.render.BackgroundRenderer;
 import de.uxnr.tsoexpert.render.BuildingRenderer;
 import de.uxnr.tsoexpert.render.FreeLandscapeRenderer;
 import de.uxnr.tsoexpert.render.LandscapeRenderer;
+import de.uxnr.tsoexpert.render.ZoneRenderer;
 import de.uxnr.tsoexpert.resource.GameSetting;
 import de.uxnr.tsoexpert.resource.XMLHandler;
 
 public class ZoneMap {
+	private final ZoneRenderer zoneRenderer = new ZoneRenderer();
+
 	private final int isoGridWidth;
 	private final int isoGridHeight;
 
@@ -37,7 +40,7 @@ public class ZoneMap {
 	private BufferedImage doubleBuffer = null;
 	private Rectangle offset = new Rectangle();
 	private Rectangle frame = new Rectangle();
-	private double zoomFactor = 1.0;
+	private int zoomFactor = 50;
 
 	private boolean showBackground = true;
 	private boolean showFreeLandscape = false;
@@ -50,16 +53,6 @@ public class ZoneMap {
 	private boolean debugResourceCreations = false;
 	private boolean debugMapValues = false;
 
-	// TODO: Move to generic location
-	private final BackgroundRenderer backgroundRenderer = new BackgroundRenderer();
-	private final BackgroundRegistry backgroundRegistry = new BackgroundRegistry();
-	private final FreeLandscapeRenderer freeLandscapeRenderer = new FreeLandscapeRenderer();
-	private final FreeLandscapeRegistry freeLandscapeRegistry = new FreeLandscapeRegistry();
-	private final LandscapeRenderer landscapeRenderer = new LandscapeRenderer();
-	private final LandscapeRegistry landscapeRegistry = new LandscapeRegistry();
-	private final BuildingRenderer buildingRenderer = new BuildingRenderer();
-	private final BuildingRegistry buildingRegistry = new BuildingRegistry();
-
 	public ZoneMap(ZoneVO zoneVO) {
 		this.zoneVO = zoneVO;
 		this.xmlHandler = (XMLHandler) TSOExpert.getHandler("XMLHandler");
@@ -67,22 +60,38 @@ public class ZoneMap {
 		this.isoGridWidth = GameSetting.getNumber(doc, "//Globals/IsoGrid/@w").intValue();
 		this.isoGridHeight = GameSetting.getNumber(doc, "//Globals/IsoGrid/@h").intValue();
 
-		this.backgroundRegistry.addAll(this.zoneVO.getBackgroundTiles());
-		this.freeLandscapeRegistry.addAll(this.zoneVO.getFreeLandscapes());
-		this.landscapeRegistry.addAll(this.zoneVO.getLandscapes());
-		this.buildingRegistry.addAll(this.zoneVO.getBuildings());
+		BackgroundRegistry.getInstance().addAll(this.zoneVO.getBackgroundTiles());
+		FreeLandscapeRegistry.getInstance().addAll(this.zoneVO.getFreeLandscapes());
+		LandscapeRegistry.getInstance().addAll(this.zoneVO.getLandscapes());
+		BuildingRegistry.getInstance().addAll(this.zoneVO.getBuildings());
+	}
+
+	public double getZoomFactor() {
+		return (double) (this.zoomFactor / 100.0);
 	}
 
 	public void updateZoomFactor(int count) {
-		double x = (this.offset.x + (this.offset.width / 2)) / this.zoomFactor;
-		double y = (this.offset.y + (this.offset.height / 2)) / this.zoomFactor;
-		if (count > 0 && this.zoomFactor < 1.5) {
-			this.zoomFactor *= 1.1;
-		} else if (count < 0 && this.zoomFactor > 0.5) {
-			this.zoomFactor *= 0.9;
-		}
-		this.offset.x = (int) (x * this.zoomFactor) - (this.offset.width / 2);
-		this.offset.y = (int) (y * this.zoomFactor) - (this.offset.height / 2);
+		double oldZoomFactor = this.getZoomFactor();
+		double offsetX = (this.offset.x + (this.offset.width / 2)) / oldZoomFactor;
+		double offsetY = (this.offset.y + (this.offset.height / 2)) / oldZoomFactor;
+		double frameX = this.frame.x / oldZoomFactor;
+		double frameY = this.frame.y / oldZoomFactor;
+		double frameWidth = (this.frame.width / oldZoomFactor) + Math.ceil(this.offset.width / oldZoomFactor);
+		double frameHeight = (this.frame.height / oldZoomFactor) + Math.ceil(this.offset.height / oldZoomFactor);
+		this.zoomFactor += 10 * count;
+		this.zoomFactor = Math.max(this.zoomFactor, 20);
+		this.zoomFactor = Math.min(this.zoomFactor, 100);
+		double newZoomFactor = this.getZoomFactor();
+		this.frame.x = (int) (frameX * newZoomFactor);
+		this.frame.y = (int) (frameY * newZoomFactor);
+		this.frame.width = (int) ((frameWidth - Math.ceil(this.offset.width / newZoomFactor)) * newZoomFactor);
+		this.frame.height = (int) ((frameHeight - Math.ceil(this.offset.height / newZoomFactor)) * newZoomFactor);
+		this.offset.x = (int) (offsetX * newZoomFactor) - (this.offset.width / 2);
+		this.offset.y = (int) (offsetY * newZoomFactor) - (this.offset.height / 2);
+		this.offset.x = Math.max(this.offset.x, this.frame.x);
+		this.offset.y = Math.max(this.offset.y, this.frame.y);
+		this.offset.x = Math.min(this.offset.x, this.frame.width);
+		this.offset.y = Math.min(this.offset.y, this.frame.height);
 	}
 
 	public void updateOffsetX(int offsetX) {
@@ -100,49 +109,49 @@ public class ZoneMap {
 	public void setShowBackground(boolean showBackground) {
 		this.showBackground = showBackground;
 		if (this.showBackground)
-			this.backgroundRenderer.setMode(Mode.SHOW);
+			BackgroundRenderer.getInstance().setMode(Mode.SHOW);
 	}
 
 	public void setShowFreeLandscape(boolean showFreeLandscape) {
 		this.showFreeLandscape = showFreeLandscape;
 		if (this.showFreeLandscape)
-			this.freeLandscapeRenderer.setMode(Mode.SHOW);
+			FreeLandscapeRenderer.getInstance().setMode(Mode.SHOW);
 	}
 
 	public void setShowLandscape(boolean showLandscape) {
 		this.showLandscape = showLandscape;
 		if (this.showLandscape)
-			this.landscapeRenderer.setMode(Mode.SHOW);
+			LandscapeRenderer.getInstance().setMode(Mode.SHOW);
 	}
 
 	public void setShowBuilding(boolean showBuilding) {
 		this.showBuilding = showBuilding;
 		if (this.showBuilding)
-			this.buildingRenderer.setMode(Mode.SHOW);
+			BuildingRenderer.getInstance().setMode(Mode.SHOW);
 	}
 
 	public void setDebugBackground(boolean debugBackground) {
 		this.debugBackground = debugBackground;
 		if (this.debugBackground)
-			this.backgroundRenderer.setMode(Mode.DEBUG);
+			BackgroundRenderer.getInstance().setMode(Mode.DEBUG);
 	}
 
 	public void setDebugFreeLandscape(boolean debugFreeLandscape) {
 		this.debugFreeLandscape = debugFreeLandscape;
 		if (this.debugFreeLandscape)
-			this.freeLandscapeRenderer.setMode(Mode.DEBUG);
+			FreeLandscapeRenderer.getInstance().setMode(Mode.DEBUG);
 	}
 
 	public void setDebugLandscape(boolean debugLandscape) {
 		this.debugLandscape = debugLandscape;
 		if (this.debugLandscape)
-			this.landscapeRenderer.setMode(Mode.DEBUG);
+			LandscapeRenderer.getInstance().setMode(Mode.DEBUG);
 	}
 
 	public void setDebugBuilding(boolean debugBuilding) {
 		this.debugBuilding = debugBuilding;
 		if (this.debugBuilding)
-			this.buildingRenderer.setMode(Mode.DEBUG);
+			BuildingRenderer.getInstance().setMode(Mode.DEBUG);
 	}
 
 	public void setDebugResourceCreations(boolean debugResourceCreations) {
@@ -164,42 +173,40 @@ public class ZoneMap {
 			this.offset.height = this.doubleBuffer.getHeight(null);
 		}
 
+		double zoomFactor = this.getZoomFactor();
+
 		Rectangle clip = new Rectangle(this.offset);
 		Graphics2D g = this.doubleBuffer.createGraphics();
 
+//		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+//		g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+//		g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 		g.setBackground(graphics.getBackground());
 		g.setColor(graphics.getColor());
 		g.setFont(graphics.getFont());
 		g.fillRect(0, 0, size.width, size.height);
 		g.translate(clip.x*-1, clip.y*-1);
-		g.scale(this.zoomFactor, this.zoomFactor);
+		g.scale(zoomFactor, zoomFactor);
 
-		clip.x = (int) Math.floor(clip.x/this.zoomFactor);
-		clip.y = (int) Math.floor(clip.y/this.zoomFactor);
-		clip.width = (int) Math.ceil(clip.width/this.zoomFactor);
-		clip.height = (int) Math.ceil(clip.height/this.zoomFactor);
+		clip.x = (int) Math.floor(clip.x / zoomFactor);
+		clip.y = (int) Math.floor(clip.y / zoomFactor);
+		clip.width = (int) Math.ceil(clip.width / zoomFactor);
+		clip.height = (int) Math.ceil(clip.height / zoomFactor);
 
-		if (this.showBackground || this.debugBackground) {
-			this.frame = this.drawBackground(g, clip);
-			this.frame.x *= this.zoomFactor;
-			this.frame.y *= this.zoomFactor;
-			this.frame.width *= this.zoomFactor;
-			this.frame.height *= this.zoomFactor;
-			this.offset.x = Math.max(this.offset.x, this.frame.x);
-			this.offset.y = Math.max(this.offset.y, this.frame.y);
-			this.offset.x = Math.min(this.offset.x, this.frame.width);
-			this.offset.y = Math.min(this.offset.y, this.frame.height);
-		}
-		if (this.showFreeLandscape || this.debugFreeLandscape) {
-			this.drawFreeLandscape(g, clip);
-		}
-		if (this.showLandscape || this.debugLandscape) {
-			this.drawLandscape(g, clip);
-		}
-		if (this.showBuilding || this.debugBuilding) {
-			this.drawBuildings(g, clip);
-		}
+		this.frame = this.zoneRenderer.renderZone(g, clip);
+		this.frame.width -= clip.width;
+		this.frame.height -= clip.height;
+		this.frame.x *= zoomFactor;
+		this.frame.y *= zoomFactor;
+		this.frame.width *= zoomFactor;
+		this.frame.height *= zoomFactor;
+		this.offset.x = Math.max(this.offset.x, this.frame.x);
+		this.offset.y = Math.max(this.offset.y, this.frame.y);
+		this.offset.x = Math.min(this.offset.x, this.frame.width);
+		this.offset.y = Math.min(this.offset.y, this.frame.height);
+
 		if (this.debugResourceCreations) {
 			this.drawResourceCreations(g, clip);
 		}
@@ -210,25 +217,6 @@ public class ZoneMap {
 		graphics.drawImage(this.doubleBuffer, 0, 0, null);
 
 		g.dispose();
-	}
-
-	private Rectangle drawBackground(Graphics2D g, Rectangle clip) {
-		Rectangle frame = this.backgroundRegistry.renderBackgrounds(this.backgroundRenderer, g, clip);
-		frame.width -= clip.width;
-		frame.height -= clip.height;
-		return frame;
-	}
-
-	private void drawFreeLandscape(Graphics2D g, Rectangle clip) {
-		this.freeLandscapeRegistry.renderFreeLandscapes(this.freeLandscapeRenderer, g, clip);
-	}
-
-	private void drawLandscape(Graphics2D g, Rectangle clip) {
-		this.landscapeRegistry.renderLandscapes(this.landscapeRenderer, g, clip);
-	}
-
-	private void drawBuildings(Graphics2D g, Rectangle clip) {
-		this.buildingRegistry.renderBuildings(this.buildingRenderer, g, clip);
 	}
 
 	private void drawMapValues(Graphics2D g, Rectangle clip) {

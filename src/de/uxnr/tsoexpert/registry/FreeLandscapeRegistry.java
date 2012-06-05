@@ -1,52 +1,47 @@
 package de.uxnr.tsoexpert.registry;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
 import de.uxnr.tsoexpert.game.communication.vo.FreeLandscapeVO;
 import de.uxnr.tsoexpert.model.FreeLandscape;
-import de.uxnr.tsoexpert.model.GridPosition;
-import de.uxnr.tsoexpert.render.FreeLandscapeRenderer;
+import de.uxnr.tsoexpert.model.grid.FreeGridPosition;
 
 public class FreeLandscapeRegistry {
-	private final Map<GridPosition, FreeLandscape> freeLandscapes = new TreeMap<GridPosition, FreeLandscape>();
+	private static FreeLandscapeRegistry instance;
+
+	private FreeLandscapeRegistry() {
+	}
+
+	public static FreeLandscapeRegistry getInstance() {
+		if (FreeLandscapeRegistry.instance == null) {
+			FreeLandscapeRegistry.instance = new FreeLandscapeRegistry();
+		}
+		return FreeLandscapeRegistry.instance;
+	}
+
+	private final Map<FreeGridPosition, FreeLandscape> freeLandscapes = new TreeMap<FreeGridPosition, FreeLandscape>();
 
 	public void add(FreeLandscapeVO freeLandscapeVO) {
 		FreeLandscape freeLandscape = new FreeLandscape(freeLandscapeVO);
 		this.freeLandscapes.put(freeLandscape.getPosition(), freeLandscape); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().add(freeLandscape.getPosition(), freeLandscape);
 	}
 
 	public void addAll(Collection<FreeLandscapeVO> freeLandscapeVOs) {
 		for (FreeLandscapeVO freeLandscapeVO : freeLandscapeVOs) {
-			this.add(freeLandscapeVO); // TODO: Fire event
+			this.add(freeLandscapeVO);
 		}
 	}
 
 	public void remove(FreeLandscapeVO freeLandscapeVO) {
 		FreeLandscape freeLandscape = new FreeLandscape(freeLandscapeVO);
-		this.freeLandscapes.remove(freeLandscape); // TODO: Fire event
+		this.freeLandscapes.remove(freeLandscape.getPosition()); // TODO: Fire event
+		ZoneObjectRegistry.getInstance().remove(freeLandscape.getPosition());
 	}
 
-	public void clear() {
-		for (FreeLandscape freeLandscape : this.freeLandscapes.values()) {
-			this.freeLandscapes.remove(freeLandscape); // TODO: Fire event
-		}
-	}
-
-	public Rectangle renderFreeLandscapes(FreeLandscapeRenderer freeLandscapeRenderer, Graphics2D graphics, Rectangle clip) {
-		Rectangle frame = new Rectangle();
-		for (FreeLandscape freeLandscape : this.freeLandscapes.values()) {
-			Rectangle sprite = freeLandscapeRenderer.renderFreeLandscape(freeLandscape, graphics, clip);
-			if (sprite != null) {
-				frame.x = Math.min(frame.x, sprite.x);
-				frame.y = Math.min(frame.y, sprite.y);
-				frame.width = Math.max(frame.width, sprite.x + sprite.width);
-				frame.height =  Math.max(frame.height, sprite.y + sprite.height);
-			}
-		}
-		return frame;
+	public Map<FreeGridPosition, FreeLandscape> getAll() {
+		return this.freeLandscapes;
 	}
 }
