@@ -51,6 +51,7 @@ public class FileDecrypter {
 			output.write(bytearr, 0, length);
 		}
 		output.close();
+		stream.close();
 
 		String path = fd.getPath().replaceAll("\\.(.*)_enc", "\\.$1");
 		return new FileData(path, output.toByteArray());
@@ -68,6 +69,7 @@ public class FileDecrypter {
 			output.write(bytearr, 0, length);
 		}
 		output.close();
+		input.close();
 		
 		String key = new String(output.toByteArray());
 		return key.trim().getBytes("UTF8");
