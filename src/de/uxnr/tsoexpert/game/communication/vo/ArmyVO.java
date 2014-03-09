@@ -5,9 +5,9 @@ import java.util.List;
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class ArmyVO extends AMF3_Object {
-	private List<SquadVO> squads;
+  private List<SquadVO> squads;
 
-	public List<SquadVO> getSquads() {
-		return this.squads;
-	}
+  public List<SquadVO> getSquads() {
+    return this.squads;
+  }
 }

@@ -4,14 +4,14 @@ import de.uxnr.amf.v3.AMF3_Object;
 import de.uxnr.tsoexpert.game.communication.vo.BuffVO;
 
 public class BuffedDataVO extends AMF3_Object {
-	private int buffedObjectGridIdx;
-	private BuffVO buffVO;
+  private int buffedObjectGridIdx;
+  private BuffVO buffVO;
 
-	public int getBuffedObjectGridIdx() {
-		return this.buffedObjectGridIdx;
-	}
+  public int getBuffedObjectGridIdx() {
+    return this.buffedObjectGridIdx;
+  }
 
-	public BuffVO getBuffVO() {
-		return this.buffVO;
-	}
+  public BuffVO getBuffVO() {
+    return this.buffVO;
+  }
 }
