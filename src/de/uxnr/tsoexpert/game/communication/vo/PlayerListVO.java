@@ -5,9 +5,9 @@ import java.util.List;
 import de.uxnr.amf.v3.AMF3_Object;
 
 public class PlayerListVO extends AMF3_Object {
-	private List<PlayerListItemVO> players;
+  private List<PlayerListItemVO> players;
 
-	public List<PlayerListItemVO> getPlayers() {
-		return this.players;
-	}
+  public List<PlayerListItemVO> getPlayers() {
+    return this.players;
+  }
 }

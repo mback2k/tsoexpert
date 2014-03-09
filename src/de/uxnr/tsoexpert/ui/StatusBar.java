@@ -8,12 +8,12 @@ import javax.swing.JPanel;
 import javax.swing.border.SoftBevelBorder;
 
 public class StatusBar extends JPanel {
-	private static final long serialVersionUID = -2959948628247896789L;
+  private static final long serialVersionUID = -2959948628247896789L;
 
-	public StatusBar(JFrame parent) {
-		super();
-		this.setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
-		this.setPreferredSize(new Dimension(parent.getWidth(), 18));
-		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	}
+  public StatusBar(JFrame parent) {
+    super();
+    this.setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
+    this.setPreferredSize(new Dimension(parent.getWidth(), 18));
+    this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+  }
 }
